@@ -289,7 +289,6 @@
                     <div class="form-group"><label>📅 Fin:</label><input type="date" id="reservaFin"></div>
                     <div class="form-group"><label>💰 Precio Total:</label><input type="number" id="reservaPrecio" step="0.01" placeholder="Editable"></div>
                     <div class="form-group full-width"><label>📝 Notas:</label><textarea id="reservaNotas" rows="2" placeholder="Instrucciones especiales..."></textarea></div>
-                    <!-- MULTI-PERRO: Mismo dueño -->
                     <div class="form-group full-width" id="grupoPerrosSection" style="display:none;background:#f0f7ff;padding:12px;border-radius:10px;border:2px solid #764ba2;">
                         <label style="color:#764ba2;font-weight:bold;">🐕🐕 ¿Más perros del mismo dueño? (van juntos en la misma caseta)</label>
                         <div id="listaPerrosMismoDueno" style="margin-top:8px;"></div>
@@ -691,7 +690,6 @@ window.guardarEdicionPerro = async () => {
 // RESERVAS - CON MULTI-PERRO
 window.cargarSelectPerros = () => { const s = document.getElementById('reservaPerro'); s.innerHTML = '<option value="">Seleccionar...</option>'; perrosDB.forEach(p => { s.innerHTML += `<option value="${p.id}" data-dueno="${p.nombreDueno}">${p.nombrePerro} (${p.nombreDueno})</option>`; }); const h = document.getElementById('hotelPerro'); h.innerHTML = '<option value="">Seleccionar...</option>'; perrosDB.forEach(p => { h.innerHTML += `<option value="${p.id}">${p.nombrePerro} (${p.nombreDueno})</option>`; }); };
 
-// MULTI-PERRO: Verificar si hay más perros del mismo dueño
 window.verificarPerrosMismoDueno = () => {
     const select = document.getElementById('reservaPerro');
     const opcionSeleccionada = select.options[select.selectedIndex];
@@ -761,7 +759,7 @@ window.crearReserva = async () => {
     } catch (e) { alert('❌ Error: ' + e.message); } 
 };
 
-// EDITAR RESERVA - CON MULTI-PERRO
+// EDITAR RESERVA - CON MULTI-PERRO CORREGIDO
 window.editarReserva = (id) => {
     const r = reservasDB.find(x => x.id === id);
     if (!r) return;
@@ -775,19 +773,30 @@ window.editarReserva = (id) => {
     document.getElementById('editReservaPrecio').value = r.precio || 0;
     document.getElementById('editReservaNotas').value = r.notas || '';
     
-    // MULTI-PERRO: Verificar si hay más perros del mismo dueño para añadir
     const section = document.getElementById('editGrupoPerrosSection');
     const lista = document.getElementById('editListaPerrosMismoDueno');
-    const otrosPerros = perrosDB.filter(p => p.nombreDueno === r.nombreDueno && p.id !== r.idPerro);
     
-    if (otrosPerros.length > 0) {
+    const otrosPerros = perrosDB.filter(p => 
+        p.nombreDueno === r.nombreDueno && 
+        p.id !== r.idPerro
+    );
+    
+    if (otrosPerros.length > 0 && r.tipo === 'hotel') {
         section.style.display = 'block';
-        lista.innerHTML = otrosPerros.map(p => 
-            `<label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px;">
-                <input type="checkbox" value="${p.id}" class="perro-grupo-edit" style="width:18px;height:18px;"> 
-                🐕 ${p.nombrePerro}
-            </label>`
-        ).join('');
+        lista.innerHTML = `
+            <p style="font-size:12px;color:#666;margin-bottom:8px;">
+                🏪 Caseta actual: <strong>${r.caseta || 'No asignada'}</strong>
+            </p>
+            ${otrosPerros.map(p => 
+                `<label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px;">
+                    <input type="checkbox" value="${p.id}" class="perro-grupo-edit" style="width:18px;height:18px;"> 
+                    🐕 ${p.nombrePerro}
+                </label>`
+            ).join('')}
+            <p style="font-size:11px;color:#764ba2;margin-top:8px;font-weight:bold;">
+                ℹ️ Todos los perros compartirán la caseta ${r.caseta || 'asignada'}
+            </p>
+        `;
     } else {
         section.style.display = 'none';
     }
@@ -795,7 +804,7 @@ window.editarReserva = (id) => {
     document.getElementById('modalEditarReserva').style.display = 'block';
 };
 
-// MULTI-PERRO EDIT: Añadir perros al grupo desde edición
+// MULTI-PERRO EDIT: Añadir perros al grupo desde edición - CORREGIDO
 window.agregarPerrosAGrupoEdicion = async () => {
     const checkboxes = document.querySelectorAll('.perro-grupo-edit:checked');
     const perrosGrupo = Array.from(checkboxes).map(cb => cb.value);
@@ -805,15 +814,18 @@ window.agregarPerrosAGrupoEdicion = async () => {
         return;
     }
     
-    if (!confirm(`¿Crear ${perrosGrupo.length} reserva(s) adicional(es) para estos perros?`)) {
+    const r = reservaEditActual;
+    const caseta = r.caseta || '-';
+    
+    if (!confirm(`¿Crear ${perrosGrupo.length} reserva(s) adicional(es) en la CASETA ${caseta}?`)) {
         return;
     }
     
     mostrarLoading(true);
     
     try {
-        const r = reservaEditActual;
         const grupoId = r.grupoId || `grupo-${Date.now()}`;
+        let creadas = 0;
         
         for (const perroId of perrosGrupo) {
             const perroGrupo = perrosDB.find(p => p.id === perroId);
@@ -828,24 +840,27 @@ window.agregarPerrosAGrupoEdicion = async () => {
                     inicio: r.inicio,
                     fin: r.fin,
                     precio: r.precio,
-                    caseta: r.caseta,
+                    caseta: caseta,
                     notas: r.notas,
                     completadas: 0,
                     total: r.total,
                     fechaCreacion: new Date().toISOString(),
                     grupoId: grupoId
                 });
+                creadas++;
             }
         }
         
-        // Actualizar la reserva original con grupoId si no lo tenía
         if (!r.grupoId) {
-            await updateDoc(doc(db, 'usuarios', currentUser.uid, 'reservas', r.id), { grupoId });
+            await updateDoc(doc(db, 'usuarios', currentUser.uid, 'reservas', r.id), { 
+                grupoId: grupoId 
+            });
         }
         
-        alert(`✅ ${perrosGrupo.length} perro(s) añadido(s) al grupo`);
-        cerrarModal('modalEditarReserva');
         mostrarLoading(false);
+        alert(`✅ ${creadas} perro(s) añadido(s) al grupo - Caseta ${caseta}`);
+        cerrarModal('modalEditarReserva');
+        reservaEditActual = null;
     } catch (e) {
         mostrarLoading(false);
         alert('❌ Error: ' + e.message);
