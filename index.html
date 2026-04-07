@@ -165,7 +165,6 @@
             .container { padding: 10px; }
         }
         
-        /* ESTILOS PARA FACTURA IMPRESA */
         .factura-print {
             display: none;
             padding: 40px;
@@ -451,7 +450,7 @@
             <div class="table-container"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Perro</th><th>Servicio</th><th>Días</th><th>Total</th><th>Estado</th></tr></thead><tbody id="tablaHistorial"></tbody></table></div>
         </div>
 
-        <!-- FACTURAS - CORREGIDO -->
+        <!-- FACTURAS -->
         <div id="facturas" class="section">
             <div class="form-section">
                 <h3>📄 Generar Factura</h3>
@@ -763,7 +762,6 @@ window.calcularPrecioConIVA = () => {
     document.getElementById('total').value = total.toFixed(2);
 };
 
-// También calcular cuando cambie el total manualmente
 document.getElementById('total')?.addEventListener('input', () => {
     const total = parseFloat(document.getElementById('total').value) || 0;
     const base = total / 1.21;
@@ -1548,7 +1546,6 @@ window.generarFactura = async () => {
         
         alert(`✅ Factura #${factura.numero} generada\nCliente: ${cliente}\nTotal: ${total.toFixed(2)}€ (con IVA)`);
         
-        // Limpiar campos
         document.getElementById('buscadorDuenosFactura').value = '';
         document.getElementById('buscadorPerrosFactura').value = '';
         document.getElementById('duenoSeleccionadoInfo').style.display = 'none';
@@ -1578,8 +1575,9 @@ function mostrarFacturas() {
         return; 
     } 
     facturasDB.slice().reverse().forEach(f => { 
-        const seleccionado = facturasSeleccionadas.includes(f.id) ? 'checked' : ''; 
-        tbody.innerHTML += `<tr><td><input type="checkbox" class="factura-checkbox" data-id="${f.id}" ${seleccionado} onchange="toggleSeleccionFactura('${f.id}')" style="width: 20px; height: 20px; cursor: pointer;"></td><td><strong>#${String(f.numero).padStart(5, '0')}</strong></td><td>${f.fecha}</td><td>${f.cliente}</td><td><strong>${f.total.toFixed(2)}€</strong></td><td class="actions"><button class="btn btn-info" onclick="verFactura('${f.id}')">👁️</button><button class="btn btn-warning" onclick="editarFactura('${f.id}')">✏️</button><button class="btn btn-danger" onclick="eliminarFactura('${f.id}')">🗑️</button></td></tr>`; 
+        const seleccionado = facturasSeleccionadas.includes(f.id) ? 'checked' : '';
+        const totalNum = parseFloat(f.total) || 0;
+        tbody.innerHTML += `<tr><td><input type="checkbox" class="factura-checkbox" data-id="${f.id}" ${seleccionado} onchange="toggleSeleccionFactura('${f.id}')" style="width: 20px; height: 20px; cursor: pointer;"></td><td><strong>#${String(f.numero).padStart(5, '0')}</strong></td><td>${f.fecha}</td><td>${f.cliente}</td><td><strong>${totalNum.toFixed(2)}€</strong></td><td class="actions"><button class="btn btn-info" onclick="verFactura('${f.id}')">👁️</button><button class="btn btn-warning" onclick="editarFactura('${f.id}')">✏️</button><button class="btn btn-danger" onclick="eliminarFactura('${f.id}')">🗑️</button></td></tr>`; 
     }); 
     actualizarContadorFacturas(); 
 }
@@ -1587,8 +1585,11 @@ function mostrarFacturas() {
 window.verFactura = (id) => { 
     const f = facturasDB.find(x => x.id === id); 
     if (!f) return; 
-    facturaIndividualActual = f; 
-    alert(`Factura #${f.numero}\nFecha: ${f.fecha}\nCliente: ${f.cliente}\nServicio: ${f.servicio}\nBase: ${f.baseImponible.toFixed(2)}€\nIVA: ${f.iva.toFixed(2)}€\nTotal: ${f.total.toFixed(2)}€`); 
+    facturaIndividualActual = f;
+    const baseNum = parseFloat(f.baseImponible) || 0;
+    const ivaNum = parseFloat(f.iva) || 0;
+    const totalNum = parseFloat(f.total) || 0;
+    alert(`Factura #${f.numero}\nFecha: ${f.fecha}\nCliente: ${f.cliente}\nServicio: ${f.servicio}\nBase: ${baseNum.toFixed(2)}€\nIVA: ${ivaNum.toFixed(2)}€\nTotal: ${totalNum.toFixed(2)}€`); 
 };
 
 window.eliminarFactura = async (id) => { 
@@ -1784,8 +1785,12 @@ window.imprimirFacturasSeleccionadas = () => {
     if (facturasSeleccionadas.length === 0) { alert('❌ Selecciona al menos una factura'); return; }
     const facturasAImprimir = facturasDB.filter(f => facturasSeleccionadas.includes(f.id));
     
-    // Rellenar plantilla de factura
     const f = facturasAImprimir[0];
+    
+    const baseNum = parseFloat(f.baseImponible) || 0;
+    const ivaNum = parseFloat(f.iva) || 0;
+    const totalNum = parseFloat(f.total) || 0;
+    
     document.getElementById('printCliente').textContent = f.cliente;
     document.getElementById('printClienteDNI').textContent = f.clienteDNI || '-';
     document.getElementById('printClienteDireccion').textContent = f.clienteDireccion || '-';
@@ -1796,11 +1801,11 @@ window.imprimirFacturasSeleccionadas = () => {
     document.getElementById('printPerro').textContent = f.nombrePerro || '-';
     document.getElementById('printServicio').textContent = f.servicio;
     document.getElementById('printConcepto').textContent = f.servicio;
-    document.getElementById('printBase').textContent = f.baseImponible.toFixed(2) + '€';
-    document.getElementById('printTotal').textContent = f.total.toFixed(2) + '€';
-    document.getElementById('printTotalBase').textContent = f.baseImponible.toFixed(2) + '€';
-    document.getElementById('printTotalIVA').textContent = f.iva.toFixed(2) + '€';
-    document.getElementById('printTotalFinal').textContent = f.total.toFixed(2) + '€';
+    document.getElementById('printBase').textContent = baseNum.toFixed(2) + '€';
+    document.getElementById('printTotal').textContent = totalNum.toFixed(2) + '€';
+    document.getElementById('printTotalBase').textContent = baseNum.toFixed(2) + '€';
+    document.getElementById('printTotalIVA').textContent = ivaNum.toFixed(2) + '€';
+    document.getElementById('printTotalFinal').textContent = totalNum.toFixed(2) + '€';
     
     const printContent = document.getElementById('facturaPrintTemplate').outerHTML;
     const originalContent = document.body.innerHTML;
