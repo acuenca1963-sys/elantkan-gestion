@@ -124,6 +124,7 @@
         .buscador-perros-item:last-child { border-bottom: none; }
         .perro-seleccionado-info { background: #e8f5e9; padding: 10px; border-radius: 5px; margin-top: 10px; display: none; }
         .edad-calculada { background: #f0f7ff; padding: 8px; border-radius: 5px; font-weight: bold; color: #764ba2; min-width: 100px; text-align: center; }
+        .dueño-seleccionado-info { background: #e8f5e9; padding: 10px; border-radius: 5px; margin-top: 10px; display: none; }
         
         @media print {
             body * { visibility: hidden; }
@@ -344,17 +345,33 @@
             <div class="table-container"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Perro</th><th>Servicio</th><th>Días</th><th>Total</th><th>Estado</th></tr></thead><tbody id="tablaHistorial"></tbody></table></div>
         </div>
 
-        <!-- FACTURAS -->
+        <!-- FACTURAS - CON BUSCADOR -->
         <div id="facturas" class="section">
             <div class="form-section">
                 <h3>📄 Generar Factura</h3>
                 <div class="form-grid">
-                    <div class="form-group"><label>Dueño:</label><select id="selectDueno" onchange="cargarPerrosDelDueno()"></select></div>
-                    <div class="form-group"><label>Perro:</label><select id="selectPerro"></select></div>
+                    <div class="form-group full-width">
+                        <label>👤 Buscar Dueño:</label>
+                        <input type="text" id="buscadorDuenosFactura" placeholder="🔍 Escribe el nombre del dueño..." onkeyup="buscarDuenoParaFactura()">
+                        <div id="buscadorDuenosResultados" class="buscador-perros-resultados"></div>
+                        <div id="duenoSeleccionadoInfo" class="dueño-seleccionado-info">
+                            <strong>✅ Dueño seleccionado:</strong> <span id="duenoSeleccionadoNombre"></span>
+                            <input type="hidden" id="facturaDueno">
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>🐕 Buscar Perro:</label>
+                        <input type="text" id="buscadorPerrosFactura" placeholder="🔍 Escribe el nombre del perro..." onkeyup="buscarPerroParaFactura()" disabled>
+                        <div id="buscadorPerrosFacturaResultados" class="buscador-perros-resultados"></div>
+                        <div id="perroFacturaSeleccionadoInfo" class="perro-seleccionado-info">
+                            <strong>✅ Perro seleccionado:</strong> <span id="perroFacturaNombre"></span>
+                            <input type="hidden" id="facturaPerroId">
+                        </div>
+                    </div>
                     <div class="form-group"><label>Servicio:</label><select id="servicio" onchange="actualizarPrecio()"><option value="35">Clase Suelta - 35€</option><option value="350">Pack 10 Clases - 350€</option><option value="500">Pack 20 Clases - 500€</option><option value="15">Hotel - 15€/día</option><option value="10">Guardería - 10€/día</option></select></div>
                     <div class="form-group"><label>Total:</label><input type="number" id="total" readonly></div>
                 </div>
-                <button class="btn btn-success" onclick="generarFactura()">📄 Generar</button>
+                <button class="btn btn-success" onclick="generarFactura()" style="width:100%;">📄 Generar</button>
             </div>
             
             <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
@@ -641,6 +658,81 @@ async function eliminarFotoFirebase(perroId) {
         console.error('Error eliminando foto:', error);
     }
 }
+
+// BUSCADOR DUEÑOS PARA FACTURA
+window.buscarDuenoParaFactura = () => {
+    const texto = document.getElementById('buscadorDuenosFactura').value.toLowerCase().trim();
+    const resultados = document.getElementById('buscadorDuenosResultados');
+    
+    if (texto.length < 2) {
+        resultados.style.display = 'none';
+        return;
+    }
+    
+    const dueñosUnicos = [...new Set(perrosDB.map(p => p.nombreDueno))];
+    const dueñosEncontrados = dueñosUnicos.filter(d => d.toLowerCase().includes(texto));
+    
+    if (dueñosEncontrados.length === 0) {
+        resultados.innerHTML = '<div class="buscador-perros-item">❌ No encontrado</div>';
+        resultados.style.display = 'block';
+        return;
+    }
+    
+    resultados.innerHTML = dueñosEncontrados.map(d => 
+        `<div class="buscador-perros-item" onclick="seleccionarDuenoParaFactura('${d}')">
+            👤 <strong>${d}</strong>
+        </div>`
+    ).join('');
+    resultados.style.display = 'block';
+};
+
+window.seleccionarDuenoParaFactura = (dueno) => {
+    document.getElementById('facturaDueno').value = dueno;
+    document.getElementById('duenoSeleccionadoNombre').textContent = dueno;
+    document.getElementById('duenoSeleccionadoInfo').style.display = 'block';
+    document.getElementById('buscadorDuenosResultados').style.display = 'none';
+    document.getElementById('buscadorDuenosFactura').value = dueno;
+    document.getElementById('buscadorPerrosFactura').disabled = false;
+    document.getElementById('buscadorPerrosFactura').focus();
+    document.getElementById('perroFacturaSeleccionadoInfo').style.display = 'none';
+    document.getElementById('facturaPerroId').value = '';
+};
+
+// BUSCADOR PERROS PARA FACTURA
+window.buscarPerroParaFactura = () => {
+    const texto = document.getElementById('buscadorPerrosFactura').value.toLowerCase().trim();
+    const resultados = document.getElementById('buscadorPerrosFacturaResultados');
+    const dueno = document.getElementById('facturaDueno').value;
+    
+    if (texto.length < 2) {
+        resultados.style.display = 'none';
+        return;
+    }
+    
+    const perrosDelDueño = perrosDB.filter(p => p.nombreDueno === dueno);
+    const perrosEncontrados = perrosDelDueño.filter(p => p.nombrePerro.toLowerCase().includes(texto));
+    
+    if (perrosEncontrados.length === 0) {
+        resultados.innerHTML = '<div class="buscador-perros-item">❌ No encontrado</div>';
+        resultados.style.display = 'block';
+        return;
+    }
+    
+    resultados.innerHTML = perrosEncontrados.map(p => 
+        `<div class="buscador-perros-item" onclick="seleccionarPerroParaFactura('${p.id}', '${p.nombrePerro}')">
+            🐕 <strong>${p.nombrePerro}</strong>
+        </div>`
+    ).join('');
+    resultados.style.display = 'block';
+};
+
+window.seleccionarPerroParaFactura = (id, nombre) => {
+    document.getElementById('facturaPerroId').value = id;
+    document.getElementById('perroFacturaNombre').textContent = nombre;
+    document.getElementById('perroFacturaSeleccionadoInfo').style.display = 'block';
+    document.getElementById('buscadorPerrosFacturaResultados').style.display = 'none';
+    document.getElementById('buscadorPerrosFactura').value = nombre;
+};
 
 // BUSCADOR PERROS PARA RESERVA
 window.buscarPerroParaReserva = () => {
@@ -1012,7 +1104,7 @@ window.crearReserva = async () => {
         document.getElementById('grupoPerrosSection').style.display = 'none';
         document.getElementById('perroSeleccionadoInfo').style.display = 'none';
         perrosGrupoReserva = [];
-        alert(`✅ Reserva(s) creada(s) - ${perrosGrupoReserva.length + 1} perro(s)`); 
+        alert(`✅ Reserva(s) creada(s)`); 
     } catch (e) { alert('❌ Error: ' + e.message); } 
 };
 
@@ -1180,16 +1272,116 @@ window.mostrarHistorial = () => {
 window.buscarEnHistorial = () => { mostrarHistorial(); };
 window.limpiarFiltrosHistorial = () => { document.getElementById('buscarHistorial').value = ''; document.getElementById('historialDesde').value = ''; document.getElementById('historialHasta').value = ''; mostrarHistorial(); };
 
-// FACTURAS
-function actualizarSelectDuenosFacturas() { const select = document.getElementById('selectDueno'); if (!select) return; const dueños = [...new Set(perrosDB.map(p => p.nombreDueno))].sort(); select.innerHTML = '<option value="">Seleccionar dueño...</option>'; dueños.forEach(d => { select.innerHTML += `<option value="${d}">${d}</option>`; }); }
-window.cargarPerrosDelDueno = () => { const dueño = document.getElementById('selectDueno').value; const select = document.getElementById('selectPerro'); if (!select) return; select.innerHTML = '<option value="">Seleccionar perro...</option>'; if (dueño) { perrosDB.filter(p => p.nombreDueno === dueño).forEach(p => { select.innerHTML += `<option value="${p.id}">${p.nombrePerro}</option>`; }); } };
+// FACTURAS - CON BUSCADOR
 window.actualizarPrecio = () => { const select = document.getElementById('servicio'); const total = document.getElementById('total'); if (!select || !total) return; total.value = select.value; };
-window.generarFactura = async () => { try { const cliente = document.getElementById('selectDueno').value; const idPerro = document.getElementById('selectPerro').value; const servicioSelect = document.getElementById('servicio'); const servicio = servicioSelect.options[servicioSelect.selectedIndex]?.text || ''; const total = document.getElementById('total').value; if (!cliente) { alert('❌ Selecciona un dueño'); return; } if (!idPerro) { alert('❌ Selecciona un perro'); return; } if (!total || parseFloat(total) <= 0) { alert('❌ El total debe ser mayor a 0'); return; } const factura = { numero: facturasDB.length + 1, fecha: new Date().toLocaleDateString('es-ES'), fechaISO: new Date().toISOString(), cliente: cliente, idPerro: idPerro, servicio: servicio, baseImponible: parseFloat(total) / 1.21, iva: 21, total: parseFloat(total), fechaCreacion: new Date().toISOString() }; await addDoc(collection(db, 'usuarios', currentUser.uid, 'facturas'), factura); facturasDB.push(factura); mostrarFacturas(); alert(`✅ Factura #${factura.numero} generada\nCliente: ${cliente}\nTotal: ${total}€`); document.getElementById('selectDueno').value = ''; document.getElementById('selectPerro').innerHTML = '<option value="">Seleccionar perro...</option>'; document.getElementById('servicio').value = '35'; document.getElementById('total').value = ''; } catch (error) { console.error('Error facturación:', error); alert('❌ Error: ' + e.message); } };
-function mostrarFacturas() { const tbody = document.getElementById('tablaFacturas'); if (!tbody) return; tbody.innerHTML = ''; if (facturasDB.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;">No hay facturas generadas</td></tr>'; return; } facturasDB.slice().reverse().forEach(f => { const seleccionado = facturasSeleccionadas.includes(f.id) ? 'checked' : ''; tbody.innerHTML += `<tr><td><input type="checkbox" class="factura-checkbox" data-id="${f.id}" ${seleccionado} onchange="toggleSeleccionFactura('${f.id}')" style="width: 20px; height: 20px; cursor: pointer;"></td><td><strong>#${String(f.numero).padStart(5, '0')}</strong></td><td>${f.fecha}</td><td>${f.cliente}</td><td><strong>${f.total.toFixed(2)}€</strong></td><td class="actions"><button class="btn btn-info" onclick="verFactura('${f.id}')">👁️</button><button class="btn btn-warning" onclick="editarFactura('${f.id}')">✏️</button><button class="btn btn-danger" onclick="eliminarFactura('${f.id}')">🗑️</button></td></tr>`; }); actualizarContadorFacturas(); }
-window.verFactura = (id) => { const f = facturasDB.find(x => x.id === id); if (!f) return; facturaIndividualActual = f; alert(`Factura #${f.numero}\nFecha: ${f.fecha}\nCliente: ${f.cliente}\nServicio: ${f.servicio}\nTotal: ${f.total.toFixed(2)}€`); };
-window.eliminarFactura = async (id) => { if (confirm('¿Eliminar esta factura?')) { try { await deleteDoc(doc(db, 'usuarios', currentUser.uid, 'facturas', id)); alert('✅ Factura eliminada'); } catch (e) { alert('❌ Error: ' + e.message); } } };
-window.editarFactura = (id) => { const f = facturasDB.find(x => x.id === id); if (!f) return; document.getElementById('editFacturaId').value = id; document.getElementById('editFacturaCliente').value = f.cliente || ''; document.getElementById('editFacturaServicio').value = f.servicio || ''; document.getElementById('editFacturaTotal').value = f.total || ''; document.getElementById('editFacturaFecha').value = f.fecha || ''; document.getElementById('modalEditarFactura').style.display = 'block'; };
-window.guardarEdicionFactura = async () => { const id = document.getElementById('editFacturaId').value; if (!id) return; const datos = { servicio: document.getElementById('editFacturaServicio').value.trim(), total: parseFloat(document.getElementById('editFacturaTotal').value) || 0, baseImponible: parseFloat(document.getElementById('editFacturaTotal').value) / 1.21 }; try { await updateDoc(doc(db, 'usuarios', currentUser.uid, 'facturas', id), datos); alert('✅ Factura actualizada'); cerrarModal('modalEditarFactura'); } catch (e) { alert('❌ Error: ' + e.message); } };
+
+window.generarFactura = async () => { 
+    try { 
+        const cliente = document.getElementById('facturaDueno').value; 
+        const idPerro = document.getElementById('facturaPerroId').value; 
+        const servicioSelect = document.getElementById('servicio'); 
+        const servicio = servicioSelect.options[servicioSelect.selectedIndex]?.text || ''; 
+        const total = document.getElementById('total').value; 
+        
+        if (!cliente) { alert('❌ Selecciona un dueño del buscador'); return; } 
+        if (!idPerro) { alert('❌ Selecciona un perro del buscador'); return; } 
+        if (!total || parseFloat(total) <= 0) { alert('❌ El total debe ser mayor a 0'); return; } 
+        
+        const factura = { 
+            numero: facturasDB.length + 1, 
+            fecha: new Date().toLocaleDateString('es-ES'), 
+            fechaISO: new Date().toISOString(), 
+            cliente: cliente, 
+            idPerro: idPerro, 
+            servicio: servicio, 
+            baseImponible: parseFloat(total) / 1.21, 
+            iva: 21, 
+            total: parseFloat(total), 
+            fechaCreacion: new Date().toISOString() 
+        }; 
+        
+        await addDoc(collection(db, 'usuarios', currentUser.uid, 'facturas'), factura); 
+        facturasDB.push(factura); 
+        mostrarFacturas(); 
+        
+        alert(`✅ Factura #${factura.numero} generada\nCliente: ${cliente}\nTotal: ${total}€`); 
+        
+        document.getElementById('buscadorDuenosFactura').value = '';
+        document.getElementById('buscadorPerrosFactura').value = '';
+        document.getElementById('duenoSeleccionadoInfo').style.display = 'none';
+        document.getElementById('perroFacturaSeleccionadoInfo').style.display = 'none';
+        document.getElementById('buscadorPerrosFactura').disabled = true;
+        document.getElementById('facturaDueno').value = '';
+        document.getElementById('facturaPerroId').value = '';
+        document.getElementById('servicio').value = '35';
+        document.getElementById('total').value = '';
+        
+    } catch (error) { 
+        console.error('Error facturación:', error); 
+        alert('❌ Error: ' + error.message); 
+    } 
+};
+
+function mostrarFacturas() { 
+    const tbody = document.getElementById('tablaFacturas'); 
+    if (!tbody) return; 
+    tbody.innerHTML = ''; 
+    if (facturasDB.length === 0) { 
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;">No hay facturas generadas</td></tr>'; 
+        return; 
+    } 
+    facturasDB.slice().reverse().forEach(f => { 
+        const seleccionado = facturasSeleccionadas.includes(f.id) ? 'checked' : ''; 
+        tbody.innerHTML += `<tr><td><input type="checkbox" class="factura-checkbox" data-id="${f.id}" ${seleccionado} onchange="toggleSeleccionFactura('${f.id}')" style="width: 20px; height: 20px; cursor: pointer;"></td><td><strong>#${String(f.numero).padStart(5, '0')}</strong></td><td>${f.fecha}</td><td>${f.cliente}</td><td><strong>${f.total.toFixed(2)}€</strong></td><td class="actions"><button class="btn btn-info" onclick="verFactura('${f.id}')">👁️</button><button class="btn btn-warning" onclick="editarFactura('${f.id}')">✏️</button><button class="btn btn-danger" onclick="eliminarFactura('${f.id}')">🗑️</button></td></tr>`; 
+    }); 
+    actualizarContadorFacturas(); 
+}
+
+window.verFactura = (id) => { 
+    const f = facturasDB.find(x => x.id === id); 
+    if (!f) return; 
+    facturaIndividualActual = f; 
+    alert(`Factura #${f.numero}\nFecha: ${f.fecha}\nCliente: ${f.cliente}\nServicio: ${f.servicio}\nTotal: ${f.total.toFixed(2)}€`); 
+};
+
+window.eliminarFactura = async (id) => { 
+    if (confirm('¿Eliminar esta factura?')) { 
+        try { 
+            await deleteDoc(doc(db, 'usuarios', currentUser.uid, 'facturas', id)); 
+            alert('✅ Factura eliminada'); 
+        } catch (e) { 
+            alert('❌ Error: ' + e.message); 
+        } 
+    } 
+};
+
+window.editarFactura = (id) => { 
+    const f = facturasDB.find(x => x.id === id); 
+    if (!f) return; 
+    document.getElementById('editFacturaId').value = id; 
+    document.getElementById('editFacturaCliente').value = f.cliente || ''; 
+    document.getElementById('editFacturaServicio').value = f.servicio || ''; 
+    document.getElementById('editFacturaTotal').value = f.total || ''; 
+    document.getElementById('editFacturaFecha').value = f.fecha || ''; 
+    document.getElementById('modalEditarFactura').style.display = 'block'; 
+};
+
+window.guardarEdicionFactura = async () => { 
+    const id = document.getElementById('editFacturaId').value; 
+    if (!id) return; 
+    const datos = { 
+        servicio: document.getElementById('editFacturaServicio').value.trim(), 
+        total: parseFloat(document.getElementById('editFacturaTotal').value) || 0, 
+        baseImponible: parseFloat(document.getElementById('editFacturaTotal').value) / 1.21 
+    }; 
+    try { 
+        await updateDoc(doc(db, 'usuarios', currentUser.uid, 'facturas', id), datos); 
+        alert('✅ Factura actualizada'); 
+        cerrarModal('modalEditarFactura'); 
+    } catch (e) { 
+        alert('❌ Error: ' + e.message); 
+    } 
+};
 
 // WHATSAPP
 function cargarContactos() { 
