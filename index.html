@@ -125,6 +125,8 @@
         .perro-seleccionado-info { background: #e8f5e9; padding: 10px; border-radius: 5px; margin-top: 10px; display: none; }
         .edad-calculada { background: #f0f7ff; padding: 8px; border-radius: 5px; font-weight: bold; color: #764ba2; min-width: 100px; text-align: center; }
         .dueño-seleccionado-info { background: #e8f5e9; padding: 10px; border-radius: 5px; margin-top: 10px; display: none; }
+        .factura-info-box { background: #f0f7ff; padding: 15px; border-radius: 8px; margin: 10px 0; }
+        .factura-info-box label { color: #764ba2; font-weight: bold; }
         
         @media print {
             body * { visibility: hidden; }
@@ -138,6 +140,7 @@
             #loginScreen { display: none !important; }
             .table-container { overflow: visible; }
             table { width: 100%; }
+            .ficha-individual, .factura-print { visibility: visible !important; position: absolute; left: 0; top: 0; width: 100%; }
         }
         
         @media (max-width: 768px) {
@@ -160,6 +163,109 @@
             .calendar-day { min-height: 70px; padding: 5px; }
             .modal-content { padding: 20px; width: 95%; }
             .container { padding: 10px; }
+        }
+        
+        /* ESTILOS PARA FACTURA IMPRESA */
+        .factura-print {
+            display: none;
+            padding: 40px;
+            font-family: Arial, sans-serif;
+            background: white;
+        }
+        .factura-print.visible {
+            display: block;
+        }
+        .factura-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #764ba2;
+        }
+        .factura-logo {
+            text-align: center;
+        }
+        .factura-logo img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+        .factura-logo h2 {
+            color: #764ba2;
+            font-size: 24px;
+            margin: 5px 0;
+        }
+        .factura-empresa {
+            text-align: right;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .factura-empresa h3 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+        .factura-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .factura-cliente, .factura-detalles {
+            flex: 1;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .factura-cliente h4, .factura-detalles h4 {
+            color: #764ba2;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #764ba2;
+            padding-bottom: 5px;
+        }
+        .factura-cliente p, .factura-detalles p {
+            margin: 5px 0;
+            font-size: 13px;
+        }
+        .factura-tabla {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .factura-tabla th {
+            background: #764ba2;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        .factura-tabla td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        .factura-totales {
+            width: 100%;
+            max-width: 300px;
+            margin-left: auto;
+        }
+        .factura-totales .fila {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .factura-totales .fila.total {
+            background: #764ba2;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .factura-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #764ba2;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
         }
     </style>
 </head>
@@ -345,7 +451,7 @@
             <div class="table-container"><table><thead><tr><th>Fecha</th><th>Cliente</th><th>Perro</th><th>Servicio</th><th>Días</th><th>Total</th><th>Estado</th></tr></thead><tbody id="tablaHistorial"></tbody></table></div>
         </div>
 
-        <!-- FACTURAS - CON BUSCADOR -->
+        <!-- FACTURAS - CORREGIDO -->
         <div id="facturas" class="section">
             <div class="form-section">
                 <h3>📄 Generar Factura</h3>
@@ -357,6 +463,10 @@
                         <div id="duenoSeleccionadoInfo" class="dueño-seleccionado-info">
                             <strong>✅ Dueño seleccionado:</strong> <span id="duenoSeleccionadoNombre"></span>
                             <input type="hidden" id="facturaDueno">
+                            <input type="hidden" id="facturaDuenoDNI">
+                            <input type="hidden" id="facturaDuenoDireccion">
+                            <input type="hidden" id="facturaDuenoTelefono">
+                            <input type="hidden" id="facturaDuenoEmail">
                         </div>
                     </div>
                     <div class="form-group full-width">
@@ -368,10 +478,20 @@
                             <input type="hidden" id="facturaPerroId">
                         </div>
                     </div>
-                    <div class="form-group"><label>Servicio:</label><select id="servicio" onchange="actualizarPrecio()"><option value="35">Clase Suelta - 35€</option><option value="350">Pack 10 Clases - 350€</option><option value="500">Pack 20 Clases - 500€</option><option value="15">Hotel - 15€/día</option><option value="10">Guardería - 10€/día</option></select></div>
-                    <div class="form-group"><label>Total:</label><input type="number" id="total" readonly></div>
+                    <div class="form-group"><label>Servicio:</label>
+                        <select id="servicio" onchange="calcularPrecioConIVA()">
+                            <option value="35">Clase Suelta - 35€</option>
+                            <option value="350">Pack 10 Clases - 350€</option>
+                            <option value="500">Pack 20 Clases - 500€</option>
+                            <option value="15">Hotel - 15€/día</option>
+                            <option value="10">Guardería - 10€/día</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Base Imponible:</label><input type="number" id="baseImponible" readonly></div>
+                    <div class="form-group"><label>IVA (21%):</label><input type="number" id="iva" readonly></div>
+                    <div class="form-group"><label>TOTAL (con IVA):</label><input type="number" id="total" step="0.01"></div>
                 </div>
-                <button class="btn btn-success" onclick="generarFactura()" style="width:100%;">📄 Generar</button>
+                <button class="btn btn-success" onclick="generarFactura()" style="width:100%;">📄 Generar Factura</button>
             </div>
             
             <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
@@ -428,6 +548,82 @@
 <div id="modalEditarFactura" class="modal"><div class="modal-content"><span class="close" onclick="cerrarModal('modalEditarFactura')">&times;</span><h2 style="color:#764ba2;margin-bottom:20px;">✏️ Editar Factura</h2><input type="hidden" id="editFacturaId"><div class="form-group"><label>Cliente:</label><input type="text" id="editFacturaCliente" readonly></div><div class="form-group"><label>Servicio:</label><input type="text" id="editFacturaServicio"></div><div class="form-group"><label>Total (€):</label><input type="number" id="editFacturaTotal" step="0.01"></div><div class="form-group"><label>Fecha:</label><input type="text" id="editFacturaFecha" readonly></div><button class="btn btn-success" onclick="guardarEdicionFactura()">💾 Guardar</button></div></div>
 
 <div id="fichaIndividual" class="ficha-individual"></div>
+
+<!-- FACTURA PRINT TEMPLATE -->
+<div id="facturaPrintTemplate" class="factura-print">
+    <div class="factura-header">
+        <div class="factura-logo">
+            <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
+            <h2>ELANTKAN</h2>
+            <p>Hotel & Adiestramiento Canino</p>
+        </div>
+        <div class="factura-empresa">
+            <h3>Datos de la Empresa</h3>
+            <p><strong>ELANTKAN Gestión Canina</strong></p>
+            <p id="facturaPrintCIF">CIF: [Tu CIF aquí]</p>
+            <p id="facturaPrintDireccion">Dirección: [Tu dirección]</p>
+            <p id="facturaPrintTelefono">Teléfono: [Tu teléfono]</p>
+            <p id="facturaPrintEmail">Email: [Tu email]</p>
+        </div>
+    </div>
+    
+    <div class="factura-info">
+        <div class="factura-cliente">
+            <h4>👤 Datos del Cliente</h4>
+            <p><strong>Nombre:</strong> <span id="printCliente"></span></p>
+            <p><strong>DNI:</strong> <span id="printClienteDNI"></span></p>
+            <p><strong>Dirección:</strong> <span id="printClienteDireccion"></span></p>
+            <p><strong>Teléfono:</strong> <span id="printClienteTelefono"></span></p>
+            <p><strong>Email:</strong> <span id="printClienteEmail"></span></p>
+        </div>
+        <div class="factura-detalles">
+            <h4>📄 Datos de la Factura</h4>
+            <p><strong>Nº Factura:</strong> <span id="printNumero"></span></p>
+            <p><strong>Fecha:</strong> <span id="printFecha"></span></p>
+            <p><strong>Perro:</strong> <span id="printPerro"></span></p>
+            <p><strong>Servicio:</strong> <span id="printServicio"></span></p>
+        </div>
+    </div>
+    
+    <table class="factura-tabla">
+        <thead>
+            <tr>
+                <th>Concepto</th>
+                <th>Base Imponible</th>
+                <th>IVA</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="printConcepto"></td>
+                <td id="printBase"></td>
+                <td>21%</td>
+                <td id="printTotal"></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div class="factura-totales">
+        <div class="fila">
+            <span>Base Imponible:</span>
+            <span id="printTotalBase"></span>
+        </div>
+        <div class="fila">
+            <span>IVA (21%):</span>
+            <span id="printTotalIVA"></span>
+        </div>
+        <div class="fila total">
+            <span>TOTAL:</span>
+            <span id="printTotalFinal"></span>
+        </div>
+    </div>
+    
+    <div class="factura-footer">
+        <p>¡Gracias por confiar en Elantkan!</p>
+        <p>Para cualquier consulta, contacte con nosotros.</p>
+    </div>
+</div>
 
 <!-- Firebase SDK -->
 <script type="module">
@@ -552,6 +748,30 @@ function calcularEdad(fechaNac) {
     if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) edad--;
     return edad + ' año' + (edad !== 1 ? 's' : '');
 }
+
+// CÁLCULO DE PRECIO CON IVA
+window.calcularPrecioConIVA = () => {
+    const servicioSelect = document.getElementById('servicio');
+    const precio = parseFloat(servicioSelect.value) || 0;
+    
+    const base = precio / 1.21;
+    const iva = base * 0.21;
+    const total = precio;
+    
+    document.getElementById('baseImponible').value = base.toFixed(2);
+    document.getElementById('iva').value = iva.toFixed(2);
+    document.getElementById('total').value = total.toFixed(2);
+};
+
+// También calcular cuando cambie el total manualmente
+document.getElementById('total')?.addEventListener('input', () => {
+    const total = parseFloat(document.getElementById('total').value) || 0;
+    const base = total / 1.21;
+    const iva = base * 0.21;
+    
+    document.getElementById('baseImponible').value = base.toFixed(2);
+    document.getElementById('iva').value = iva.toFixed(2);
+});
 
 // CÁMARA Y FOTOS
 window.abrirCamara = () => { document.getElementById('fotoInputCamara').click(); };
@@ -687,7 +907,14 @@ window.buscarDuenoParaFactura = () => {
 };
 
 window.seleccionarDuenoParaFactura = (dueno) => {
+    const perroDelDueño = perrosDB.find(p => p.nombreDueno === dueno);
+    
     document.getElementById('facturaDueno').value = dueno;
+    document.getElementById('facturaDuenoDNI').value = perroDelDueño?.dniDueno || '';
+    document.getElementById('facturaDuenoDireccion').value = perroDelDueño?.direccion || '';
+    document.getElementById('facturaDuenoTelefono').value = perroDelDueño?.telefono || '';
+    document.getElementById('facturaDuenoEmail').value = perroDelDueño?.email || '';
+    
     document.getElementById('duenoSeleccionadoNombre').textContent = dueno;
     document.getElementById('duenoSeleccionadoInfo').style.display = 'block';
     document.getElementById('buscadorDuenosResultados').style.display = 'none';
@@ -696,6 +923,8 @@ window.seleccionarDuenoParaFactura = (dueno) => {
     document.getElementById('buscadorPerrosFactura').focus();
     document.getElementById('perroFacturaSeleccionadoInfo').style.display = 'none';
     document.getElementById('facturaPerroId').value = '';
+    
+    calcularPrecioConIVA();
 };
 
 // BUSCADOR PERROS PARA FACTURA
@@ -1272,40 +1501,54 @@ window.mostrarHistorial = () => {
 window.buscarEnHistorial = () => { mostrarHistorial(); };
 window.limpiarFiltrosHistorial = () => { document.getElementById('buscarHistorial').value = ''; document.getElementById('historialDesde').value = ''; document.getElementById('historialHasta').value = ''; mostrarHistorial(); };
 
-// FACTURAS - CON BUSCADOR
-window.actualizarPrecio = () => { const select = document.getElementById('servicio'); const total = document.getElementById('total'); if (!select || !total) return; total.value = select.value; };
-
+// FACTURAS - CORREGIDO CON IVA AUTOMÁTICO
 window.generarFactura = async () => { 
     try { 
-        const cliente = document.getElementById('facturaDueno').value; 
-        const idPerro = document.getElementById('facturaPerroId').value; 
-        const servicioSelect = document.getElementById('servicio'); 
-        const servicio = servicioSelect.options[servicioSelect.selectedIndex]?.text || ''; 
-        const total = document.getElementById('total').value; 
+        const cliente = document.getElementById('facturaDueno').value;
+        const clienteDNI = document.getElementById('facturaDuenoDNI').value;
+        const clienteDireccion = document.getElementById('facturaDuenoDireccion').value;
+        const clienteTelefono = document.getElementById('facturaDuenoTelefono').value;
+        const clienteEmail = document.getElementById('facturaDuenoEmail').value;
         
-        if (!cliente) { alert('❌ Selecciona un dueño del buscador'); return; } 
-        if (!idPerro) { alert('❌ Selecciona un perro del buscador'); return; } 
-        if (!total || parseFloat(total) <= 0) { alert('❌ El total debe ser mayor a 0'); return; } 
+        const idPerro = document.getElementById('facturaPerroId').value;
+        const servicioSelect = document.getElementById('servicio');
+        const servicio = servicioSelect.options[servicioSelect.selectedIndex]?.text || '';
+        
+        const baseImponible = parseFloat(document.getElementById('baseImponible').value) || 0;
+        const iva = parseFloat(document.getElementById('iva').value) || 0;
+        const total = parseFloat(document.getElementById('total').value) || 0;
+        
+        if (!cliente) { alert('❌ Selecciona un dueño del buscador'); return; }
+        if (!idPerro) { alert('❌ Selecciona un perro del buscador'); return; }
+        if (!total || total <= 0) { alert('❌ El total debe ser mayor a 0'); return; }
+        
+        const perro = perrosDB.find(p => p.id === idPerro);
         
         const factura = { 
             numero: facturasDB.length + 1, 
             fecha: new Date().toLocaleDateString('es-ES'), 
             fechaISO: new Date().toISOString(), 
-            cliente: cliente, 
-            idPerro: idPerro, 
-            servicio: servicio, 
-            baseImponible: parseFloat(total) / 1.21, 
-            iva: 21, 
-            total: parseFloat(total), 
-            fechaCreacion: new Date().toISOString() 
-        }; 
+            cliente: cliente,
+            clienteDNI: clienteDNI,
+            clienteDireccion: clienteDireccion,
+            clienteTelefono: clienteTelefono,
+            clienteEmail: clienteEmail,
+            nombrePerro: perro?.nombrePerro || '',
+            idPerro: idPerro,
+            servicio: servicio,
+            baseImponible: baseImponible,
+            iva: iva,
+            total: total,
+            fechaCreacion: new Date().toISOString()
+        };
         
-        await addDoc(collection(db, 'usuarios', currentUser.uid, 'facturas'), factura); 
-        facturasDB.push(factura); 
-        mostrarFacturas(); 
+        await addDoc(collection(db, 'usuarios', currentUser.uid, 'facturas'), factura);
+        facturasDB.push(factura);
+        mostrarFacturas();
         
-        alert(`✅ Factura #${factura.numero} generada\nCliente: ${cliente}\nTotal: ${total}€`); 
+        alert(`✅ Factura #${factura.numero} generada\nCliente: ${cliente}\nTotal: ${total.toFixed(2)}€ (con IVA)`);
         
+        // Limpiar campos
         document.getElementById('buscadorDuenosFactura').value = '';
         document.getElementById('buscadorPerrosFactura').value = '';
         document.getElementById('duenoSeleccionadoInfo').style.display = 'none';
@@ -1314,7 +1557,11 @@ window.generarFactura = async () => {
         document.getElementById('facturaDueno').value = '';
         document.getElementById('facturaPerroId').value = '';
         document.getElementById('servicio').value = '35';
+        document.getElementById('baseImponible').value = '';
+        document.getElementById('iva').value = '';
         document.getElementById('total').value = '';
+        
+        calcularPrecioConIVA();
         
     } catch (error) { 
         console.error('Error facturación:', error); 
@@ -1341,7 +1588,7 @@ window.verFactura = (id) => {
     const f = facturasDB.find(x => x.id === id); 
     if (!f) return; 
     facturaIndividualActual = f; 
-    alert(`Factura #${f.numero}\nFecha: ${f.fecha}\nCliente: ${f.cliente}\nServicio: ${f.servicio}\nTotal: ${f.total.toFixed(2)}€`); 
+    alert(`Factura #${f.numero}\nFecha: ${f.fecha}\nCliente: ${f.cliente}\nServicio: ${f.servicio}\nBase: ${f.baseImponible.toFixed(2)}€\nIVA: ${f.iva.toFixed(2)}€\nTotal: ${f.total.toFixed(2)}€`); 
 };
 
 window.eliminarFactura = async (id) => { 
@@ -1369,10 +1616,15 @@ window.editarFactura = (id) => {
 window.guardarEdicionFactura = async () => { 
     const id = document.getElementById('editFacturaId').value; 
     if (!id) return; 
+    const total = parseFloat(document.getElementById('editFacturaTotal').value) || 0;
+    const base = total / 1.21;
+    const iva = base * 0.21;
+    
     const datos = { 
         servicio: document.getElementById('editFacturaServicio').value.trim(), 
-        total: parseFloat(document.getElementById('editFacturaTotal').value) || 0, 
-        baseImponible: parseFloat(document.getElementById('editFacturaTotal').value) / 1.21 
+        total: total,
+        baseImponible: base,
+        iva: iva
     }; 
     try { 
         await updateDoc(doc(db, 'usuarios', currentUser.uid, 'facturas', id), datos); 
@@ -1523,7 +1775,7 @@ window.imprimirReservaIndividual = () => {
     location.reload();
 };
 
-// IMPRESIÓN DE FACTURAS
+// IMPRESIÓN DE FACTURAS - CON DISEÑO PROFESIONAL
 function actualizarContadorFacturas() { const count = document.getElementById('facturasSeleccionadasCount'); if (count) { count.textContent = `${facturasSeleccionadas.length} seleccionada${facturasSeleccionadas.length !== 1 ? 's' : ''}`; } }
 window.toggleSeleccionFactura = (id) => { if (facturasSeleccionadas.includes(id)) { facturasSeleccionadas = facturasSeleccionadas.filter(f => f !== id); } else { facturasSeleccionadas.push(id); } actualizarContadorFacturas(); };
 window.seleccionarTodasFacturas = (seleccionar) => { if (seleccionar) { facturasSeleccionadas = facturasDB.map(f => f.id); } else { facturasSeleccionadas = []; } mostrarFacturas(); actualizarContadorFacturas(); };
@@ -1531,13 +1783,29 @@ window.imprimirTodasFacturas = () => { if (facturasDB.length === 0) { alert('❌
 window.imprimirFacturasSeleccionadas = () => {
     if (facturasSeleccionadas.length === 0) { alert('❌ Selecciona al menos una factura'); return; }
     const facturasAImprimir = facturasDB.filter(f => facturasSeleccionadas.includes(f.id));
-    let printContent = `<div style="padding: 40px; font-family: Arial, sans-serif;"><h1 style="color: #764ba2; text-align: center; margin-bottom: 30px;">ELANTKAN - Facturas</h1><p style="text-align: center; margin-bottom: 30px;">${new Date().toLocaleDateString('es-ES')}</p>`;
-    facturasAImprimir.forEach(f => {
-        printContent += `<div style="border: 2px solid #764ba2; padding: 20px; border-radius: 10px; margin-bottom: 30px; page-break-inside: avoid;"><h2 style="color: #1e3c72; margin-bottom: 15px;">📄 Factura #${String(f.numero).padStart(5, '0')}</h2><p><strong>Fecha:</strong> ${f.fecha}</p><p><strong>Cliente:</strong> ${f.cliente}</p><p><strong>Servicio:</strong> ${f.servicio}</p><p><strong>Base Imponible:</strong> ${f.baseImponible.toFixed(2)}€</p><p><strong>IVA (21%):</strong> ${(f.total - f.baseImponible).toFixed(2)}€</p><p style="font-size: 18px; color: #764ba2;"><strong>TOTAL: ${f.total.toFixed(2)}€</strong></p><p style="margin-top: 20px; text-align: right; color: #666;">Fecha de impresión: ${new Date().toLocaleDateString('es-ES')}</p></div>`;
-    });
-    printContent += `</div>`;
+    
+    // Rellenar plantilla de factura
+    const f = facturasAImprimir[0];
+    document.getElementById('printCliente').textContent = f.cliente;
+    document.getElementById('printClienteDNI').textContent = f.clienteDNI || '-';
+    document.getElementById('printClienteDireccion').textContent = f.clienteDireccion || '-';
+    document.getElementById('printClienteTelefono').textContent = f.clienteTelefono || '-';
+    document.getElementById('printClienteEmail').textContent = f.clienteEmail || '-';
+    document.getElementById('printNumero').textContent = String(f.numero).padStart(5, '0');
+    document.getElementById('printFecha').textContent = f.fecha;
+    document.getElementById('printPerro').textContent = f.nombrePerro || '-';
+    document.getElementById('printServicio').textContent = f.servicio;
+    document.getElementById('printConcepto').textContent = f.servicio;
+    document.getElementById('printBase').textContent = f.baseImponible.toFixed(2) + '€';
+    document.getElementById('printTotal').textContent = f.total.toFixed(2) + '€';
+    document.getElementById('printTotalBase').textContent = f.baseImponible.toFixed(2) + '€';
+    document.getElementById('printTotalIVA').textContent = f.iva.toFixed(2) + '€';
+    document.getElementById('printTotalFinal').textContent = f.total.toFixed(2) + '€';
+    
+    const printContent = document.getElementById('facturaPrintTemplate').outerHTML;
     const originalContent = document.body.innerHTML;
     document.body.innerHTML = printContent;
+    document.getElementById('facturaPrintTemplate').classList.add('visible');
     window.print();
     document.body.innerHTML = originalContent;
     location.reload();
