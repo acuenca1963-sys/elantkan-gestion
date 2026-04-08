@@ -125,22 +125,19 @@
         .perro-seleccionado-info { background: #e8f5e9; padding: 10px; border-radius: 5px; margin-top: 10px; display: none; }
         .edad-calculada { background: #f0f7ff; padding: 8px; border-radius: 5px; font-weight: bold; color: #764ba2; min-width: 100px; text-align: center; }
         .dueño-seleccionado-info { background: #e8f5e9; padding: 10px; border-radius: 5px; margin-top: 10px; display: none; }
-        .factura-info-box { background: #f0f7ff; padding: 15px; border-radius: 8px; margin: 10px 0; }
-        .factura-info-box label { color: #764ba2; font-weight: bold; }
         
         @media print {
             body * { visibility: hidden; }
-            .header, .tabs, .form-section, .actions, .sync-status, .calendar-nav, .buscador-container, .stats, .user-info, .btn-logout { display: none !important; }
+            .header, .tabs, .form-section, .actions, .sync-status, .calendar-nav, .buscador-container, .stats, .user-info, .btn-logout, .modal { display: none !important; }
             #mainApp { background: white; }
             .section { display: none !important; }
             .section.active { display: block !important; visibility: visible; }
             .section.active * { visibility: visible; }
-            .modal { display: none !important; }
             .loading { display: none !important; }
             #loginScreen { display: none !important; }
             .table-container { overflow: visible; }
             table { width: 100%; }
-            .ficha-individual, .factura-print { visibility: visible !important; position: absolute; left: 0; top: 0; width: 100%; }
+            .factura-print { visibility: visible !important; position: absolute; left: 0; top: 0; width: 100%; }
         }
         
         @media (max-width: 768px) {
@@ -172,7 +169,7 @@
             background: white;
         }
         .factura-print.visible {
-            display: block;
+            display: block !important;
         }
         .factura-header {
             display: flex;
@@ -1783,37 +1780,43 @@ window.seleccionarTodasFacturas = (seleccionar) => { if (seleccionar) { facturas
 window.imprimirTodasFacturas = () => { if (facturasDB.length === 0) { alert('❌ No hay facturas para imprimir'); return; } facturasSeleccionadas = facturasDB.map(f => f.id); imprimirFacturasSeleccionadas(); };
 window.imprimirFacturasSeleccionadas = () => {
     if (facturasSeleccionadas.length === 0) { alert('❌ Selecciona al menos una factura'); return; }
-    const facturasAImprimir = facturasDB.filter(f => facturasSeleccionadas.includes(f.id));
     
-    const f = facturasAImprimir[0];
+    const f = facturasDB.find(x => x.id === facturasSeleccionadas[0]);
+    if (!f) {
+        alert('❌ Factura no encontrada');
+        return;
+    }
     
     const baseNum = parseFloat(f.baseImponible) || 0;
     const ivaNum = parseFloat(f.iva) || 0;
     const totalNum = parseFloat(f.total) || 0;
     
-    document.getElementById('printCliente').textContent = f.cliente;
+    document.getElementById('printCliente').textContent = f.cliente || '';
     document.getElementById('printClienteDNI').textContent = f.clienteDNI || '-';
     document.getElementById('printClienteDireccion').textContent = f.clienteDireccion || '-';
     document.getElementById('printClienteTelefono').textContent = f.clienteTelefono || '-';
     document.getElementById('printClienteEmail').textContent = f.clienteEmail || '-';
     document.getElementById('printNumero').textContent = String(f.numero).padStart(5, '0');
-    document.getElementById('printFecha').textContent = f.fecha;
+    document.getElementById('printFecha').textContent = f.fecha || '';
     document.getElementById('printPerro').textContent = f.nombrePerro || '-';
-    document.getElementById('printServicio').textContent = f.servicio;
-    document.getElementById('printConcepto').textContent = f.servicio;
+    document.getElementById('printServicio').textContent = f.servicio || '';
+    document.getElementById('printConcepto').textContent = f.servicio || '';
     document.getElementById('printBase').textContent = baseNum.toFixed(2) + '€';
     document.getElementById('printTotal').textContent = totalNum.toFixed(2) + '€';
     document.getElementById('printTotalBase').textContent = baseNum.toFixed(2) + '€';
     document.getElementById('printTotalIVA').textContent = ivaNum.toFixed(2) + '€';
     document.getElementById('printTotalFinal').textContent = totalNum.toFixed(2) + '€';
     
-    const printContent = document.getElementById('facturaPrintTemplate').outerHTML;
-    const originalContent = document.body.innerHTML;
-    document.body.innerHTML = printContent;
-    document.getElementById('facturaPrintTemplate').classList.add('visible');
-    window.print();
-    document.body.innerHTML = originalContent;
-    location.reload();
+    const plantilla = document.getElementById('facturaPrintTemplate');
+    plantilla.classList.add('visible');
+    plantilla.style.display = 'block';
+    
+    setTimeout(() => {
+        window.print();
+        plantilla.classList.remove('visible');
+        plantilla.style.display = 'none';
+        location.reload();
+    }, 500);
 };
 </script>
 </body>
