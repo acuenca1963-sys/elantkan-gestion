@@ -1779,7 +1779,10 @@ window.toggleSeleccionFactura = (id) => { if (facturasSeleccionadas.includes(id)
 window.seleccionarTodasFacturas = (seleccionar) => { if (seleccionar) { facturasSeleccionadas = facturasDB.map(f => f.id); } else { facturasSeleccionadas = []; } mostrarFacturas(); actualizarContadorFacturas(); };
 window.imprimirTodasFacturas = () => { if (facturasDB.length === 0) { alert('❌ No hay facturas para imprimir'); return; } facturasSeleccionadas = facturasDB.map(f => f.id); imprimirFacturasSeleccionadas(); };
 window.imprimirFacturasSeleccionadas = () => {
-    if (facturasSeleccionadas.length === 0) { alert('❌ Selecciona al menos una factura'); return; }
+    if (facturasSeleccionadas.length === 0) { 
+        alert('❌ Selecciona al menos una factura'); 
+        return; 
+    }
     
     const f = facturasDB.find(x => x.id === facturasSeleccionadas[0]);
     if (!f) {
@@ -1787,37 +1790,160 @@ window.imprimirFacturasSeleccionadas = () => {
         return;
     }
     
+    // Convertir a números
     const baseNum = parseFloat(f.baseImponible) || 0;
     const ivaNum = parseFloat(f.iva) || 0;
     const totalNum = parseFloat(f.total) || 0;
     
-    document.getElementById('printCliente').textContent = f.cliente || '';
-    document.getElementById('printClienteDNI').textContent = f.clienteDNI || '-';
-    document.getElementById('printClienteDireccion').textContent = f.clienteDireccion || '-';
-    document.getElementById('printClienteTelefono').textContent = f.clienteTelefono || '-';
-    document.getElementById('printClienteEmail').textContent = f.clienteEmail || '-';
-    document.getElementById('printNumero').textContent = String(f.numero).padStart(5, '0');
-    document.getElementById('printFecha').textContent = f.fecha || '';
-    document.getElementById('printPerro').textContent = f.nombrePerro || '-';
-    document.getElementById('printServicio').textContent = f.servicio || '';
-    document.getElementById('printConcepto').textContent = f.servicio || '';
-    document.getElementById('printBase').textContent = baseNum.toFixed(2) + '€';
-    document.getElementById('printTotal').textContent = totalNum.toFixed(2) + '€';
-    document.getElementById('printTotalBase').textContent = baseNum.toFixed(2) + '€';
-    document.getElementById('printTotalIVA').textContent = ivaNum.toFixed(2) + '€';
-    document.getElementById('printTotalFinal').textContent = totalNum.toFixed(2) + '€';
+    // Rellenar TODOS los campos - VERIFICAR QUE EXISTEN
+    const campos = {
+        'printCliente': f.cliente || '',
+        'printClienteDNI': f.clienteDNI || '-',
+        'printClienteDireccion': f.clienteDireccion || '-',
+        'printClienteTelefono': f.clienteTelefono || '-',
+        'printClienteEmail': f.clienteEmail || '-',
+        'printNumero': String(f.numero).padStart(5, '0'),
+        'printFecha': f.fecha || '',
+        'printPerro': f.nombrePerro || '-',
+        'printServicio': f.servicio || '',
+        'printConcepto': f.servicio || '',
+        'printBase': baseNum.toFixed(2) + '€',
+        'printTotal': totalNum.toFixed(2) + '€',
+        'printTotalBase': baseNum.toFixed(2) + '€',
+        'printTotalIVA': ivaNum.toFixed(2) + '€',
+        'printTotalFinal': totalNum.toFixed(2) + '€'
+    };
     
+    // Rellenar cada campo
+    for (const [id, valor] of Object.entries(campos)) {
+        const elem = document.getElementById(id);
+        if (elem) {
+            elem.textContent = valor;
+        } else {
+            console.error('Elemento no encontrado:', id);
+        }
+    }
+    
+    // Mostrar la plantilla
     const plantilla = document.getElementById('facturaPrintTemplate');
-    plantilla.classList.add('visible');
+    if (!plantilla) {
+        alert('❌ Plantilla de factura no encontrada');
+        return;
+    }
+    
+    // Forzar visualización
     plantilla.style.display = 'block';
+    plantilla.classList.add('visible');
+    
+    // Crear una copia para imprimir
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Factura ${String(f.numero).padStart(5, '0')}</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 40px; }
+                .factura-header { display: flex; justify-content: space-between; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #764ba2; }
+                .factura-logo { text-align: center; }
+                .factura-logo h2 { color: #764ba2; font-size: 24px; margin: 5px 0; }
+                .factura-empresa { text-align: right; font-size: 13px; line-height: 1.6; }
+                .factura-info { display: flex; justify-content: space-between; margin-bottom: 30px; }
+                .factura-cliente, .factura-detalles { flex: 1; padding: 15px; background: #f8f9fa; border-radius: 8px; margin: 0 10px; }
+                .factura-cliente h4, .factura-detalles h4 { color: #764ba2; margin-bottom: 10px; border-bottom: 2px solid #764ba2; padding-bottom: 5px; }
+                .factura-cliente p, .factura-detalles p { margin: 5px 0; font-size: 13px; }
+                .factura-tabla { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                .factura-tabla th { background: #764ba2; color: white; padding: 12px; text-align: left; }
+                .factura-tabla td { padding: 12px; border-bottom: 1px solid #ddd; }
+                .factura-totales { width: 100%; max-width: 300px; margin-left: auto; }
+                .factura-totales .fila { display: flex; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #eee; }
+                .factura-totales .fila.total { background: #764ba2; color: white; font-weight: bold; font-size: 16px; border-radius: 5px; }
+                .factura-footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #764ba2; text-align: center; font-size: 12px; color: #666; }
+            </style>
+        </head>
+        <body>
+            <div class="factura-header">
+                <div class="factura-logo">
+                    <h2>ELANTKAN</h2>
+                    <p>Hotel & Adiestramiento Canino</p>
+                </div>
+                <div class="factura-empresa">
+                    <h3>Datos de la Empresa</h3>
+                    <p><strong>Antonio Cuenca Alcantara</strong></p>
+                    <p>CIF: 21453234F</p>
+                    <p>Ptda. Sol del camp 11</p>
+                    <p>03698 Agost (Alicante)</p>
+                    <p>Teléfono: 615062101</p>
+                </div>
+            </div>
+            
+            <div class="factura-info">
+                <div class="factura-cliente">
+                    <h4>👤 Datos del Cliente</h4>
+                    <p><strong>Nombre:</strong> ${f.cliente || ''}</p>
+                    <p><strong>DNI:</strong> ${f.clienteDNI || '-'}</p>
+                    <p><strong>Dirección:</strong> ${f.clienteDireccion || '-'}</p>
+                    <p><strong>Teléfono:</strong> ${f.clienteTelefono || '-'}</p>
+                    <p><strong>Email:</strong> ${f.clienteEmail || '-'}</p>
+                </div>
+                <div class="factura-detalles">
+                    <h4>📄 Datos de la Factura</h4>
+                    <p><strong>Nº Factura:</strong> ${String(f.numero).padStart(5, '0')}</p>
+                    <p><strong>Fecha:</strong> ${f.fecha || ''}</p>
+                    <p><strong>Perro:</strong> ${f.nombrePerro || '-'}</p>
+                    <p><strong>Servicio:</strong> ${f.servicio || ''}</p>
+                </div>
+            </div>
+            
+            <table class="factura-tabla">
+                <thead>
+                    <tr>
+                        <th>Concepto</th>
+                        <th>Base Imponible</th>
+                        <th>IVA</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>${f.servicio || ''}</td>
+                        <td>${baseNum.toFixed(2)}€</td>
+                        <td>21%</td>
+                        <td>${totalNum.toFixed(2)}€</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="factura-totales">
+                <div class="fila">
+                    <span>Base Imponible:</span>
+                    <span>${baseNum.toFixed(2)}€</span>
+                </div>
+                <div class="fila">
+                    <span>IVA (21%):</span>
+                    <span>${ivaNum.toFixed(2)}€</span>
+                </div>
+                <div class="fila total">
+                    <span>TOTAL:</span>
+                    <span>${totalNum.toFixed(2)}€</span>
+                </div>
+            </div>
+            
+            <div class="factura-footer">
+                <p>¡Gracias por confiar en Elantkan!</p>
+                <p>Para cualquier consulta, contacte con nosotros.</p>
+            </div>
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.focus();
     
     setTimeout(() => {
-        window.print();
-        plantilla.classList.remove('visible');
-        plantilla.style.display = 'none';
-        location.reload();
-    }, 500);
-};
-</script>
+        printWindow.print();
+        printWindow.close();
+    }, 250);
+};</script>
 </body>
 </html>
