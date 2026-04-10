@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elantkan - Gestión Canina v1.3</title>
+    <title>Elantkan - Gestión Canina v1.4</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -279,13 +279,18 @@
         <p>Hotel & Adiestramiento Canino</p>
         <div class="error" id="loginError"></div>
         <div class="success" id="loginSuccess"></div>
-        <form onsubmit="event.preventDefault(); iniciarSesion();">
+        
+        <!-- LOGIN FORM -->
+        <form id="loginForm">
             <input type="email" id="loginEmail" placeholder="📧 Email" required>
             <input type="password" id="loginPassword" placeholder="🔑 Contraseña" required>
             <button type="submit">🔐 Iniciar Sesión</button>
         </form>
+        
         <p style="margin:20px 0;color:#666;">¿No tienes cuenta?</p>
-        <form onsubmit="event.preventDefault(); registrarse();">
+        
+        <!-- REGISTER FORM -->
+        <form id="registerForm">
             <input type="email" id="registerEmail" placeholder="📧 Email para registro" required>
             <input type="password" id="registerPassword" placeholder="🔑 Contraseña (mín 6 caracteres)" required>
             <button type="submit" class="secondary">📝 Crear Cuenta</button>
@@ -296,7 +301,7 @@
 <div id="mainApp">
     <div class="header">
         <div class="header-top">
-            <div><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><h1>ELANTKAN <span style="font-size:12px;opacity:0.8;">v1.3</span></h1><p>Hotel & Adiestramiento Canino</p></div>
+            <div><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><h1>ELANTKAN <span style="font-size:12px;opacity:0.8;">v1.4</span></h1><p>Hotel & Adiestramiento Canino</p></div>
             <div class="user-info"><span id="userEmail">usuario@email.com</span><button class="btn-logout" onclick="cerrarSesion()">🚪 Salir</button></div>
         </div>
     </div>
@@ -673,31 +678,55 @@ function formatearFecha(fechaISO) {
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
-// LOGIN
-window.registrarse = async () => {
+// LOGIN CON EVENT LISTENERS
+window.registrarse = async (e) => {
+    if (e) e.preventDefault();
     const email = document.getElementById('registerEmail').value;
     const password = document.getElementById('registerPassword').value;
     if (!email || !password || password.length < 6) { mostrarError('Email y contraseña (mín 6) requeridos'); return; }
     mostrarLoading(true);
-    try { await createUserWithEmailAndPassword(auth, email, password); mostrarSuccess('✅ Cuenta creada. Inicia sesión.'); document.getElementById('loginEmail').value = email; }
+    try { 
+        await createUserWithEmailAndPassword(auth, email, password); 
+        mostrarSuccess('✅ Cuenta creada. Inicia sesión.'); 
+        document.getElementById('loginEmail').value = email;
+        document.getElementById('registerEmail').value = '';
+        document.getElementById('registerPassword').value = '';
+    }
     catch (error) { mostrarError('❌ ' + error.message); }
     mostrarLoading(false);
 };
 
-window.iniciarSesion = async () => {
+window.iniciarSesion = async (e) => {
+    if (e) e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     if (!email || !password) { mostrarError('Email y contraseña requeridos'); return; }
     mostrarLoading(true);
-    try { await signInWithEmailAndPassword(auth, email, password); }
-    catch (error) { mostrarError('❌ ' + error.message); mostrarLoading(false); }
+    try { 
+        await signInWithEmailAndPassword(auth, email, password);
+        // NO recargar - onAuthStateChanged se encarga
+    }
+    catch (error) { 
+        mostrarError('❌ ' + error.message); 
+        mostrarLoading(false);
+    }
 };
 
 window.cerrarSesion = async () => { await signOut(auth); window.location.reload(); };
 
 onAuthStateChanged(auth, (user) => {
-    if (user) { currentUser = user; document.getElementById('loginScreen').style.display = 'none'; document.getElementById('mainApp').style.display = 'block'; document.getElementById('userEmail').textContent = user.email; cargarDatos(); }
-    else { currentUser = null; document.getElementById('loginScreen').style.display = 'flex'; document.getElementById('mainApp').style.display = 'none'; }
+    if (user) { 
+        currentUser = user; 
+        document.getElementById('loginScreen').style.display = 'none'; 
+        document.getElementById('mainApp').style.display = 'block'; 
+        document.getElementById('userEmail').textContent = user.email; 
+        cargarDatos(); 
+    }
+    else { 
+        currentUser = null; 
+        document.getElementById('loginScreen').style.display = 'flex'; 
+        document.getElementById('mainApp').style.display = 'none'; 
+    }
 });
 
 function cargarDatos() {
@@ -1795,7 +1824,7 @@ function mostrarSuccess(m) { const e = document.getElementById('loginSuccess'); 
 function mostrarLoading(s) { document.getElementById('loadingScreen').style.display = s ? 'flex' : 'none'; }
 function actualizarStats() { document.getElementById('statPerros').textContent = perrosDB.length; document.getElementById('statDuenos').textContent = [...new Set(perrosDB.map(p => p.nombreDueno))].length; const hoy = new Date().toISOString().split('T')[0]; document.getElementById('statReservas').textContent = reservasDB.filter(r => r.fin >= hoy && r.completadas < r.total).length; }
 
-// IMPRESIÓN DE LISTA DE RESERVAS
+// IMPRESIÓN DE LISTA DE RESERVAS (YA FUNCIONA - NO TOCAR)
 window.imprimirListaReservas = () => {
     const printWindow = window.open('', '_blank');
     
@@ -1877,7 +1906,7 @@ window.imprimirSeccion = (elementId) => {
         return;
     }
     
-    const printContent = `<div style="padding: 20px;"><h1 style="color: #764ba2; margin-bottom: 20px;">ELANTKAN - Gestión Canina v1.3</h1><h2 style="margin-bottom: 20px;">${new Date().toLocaleDateString('es-ES')}</h2>${element.outerHTML}</div>`;
+    const printContent = `<div style="padding: 20px;"><h1 style="color: #764ba2; margin-bottom: 20px;">ELANTKAN - Gestión Canina v1.4</h1><h2 style="margin-bottom: 20px;">${new Date().toLocaleDateString('es-ES')}</h2>${element.outerHTML}</div>`;
     const originalContent = document.body.innerHTML;
     document.body.innerHTML = printContent;
     window.print();
@@ -1953,5 +1982,30 @@ window.imprimirFacturasSeleccionadas = () => {
     }, 500);
 };
 </script>
+
+<!-- SERVICE WORKER PARA ACTUALIZACIONES AUTOMÁTICAS -->
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('data:text/javascript,' + encodeURIComponent(`
+        self.addEventListener('install', e => {
+            self.skipWaiting();
+        });
+        self.addEventListener('activate', e => {
+            e.waitUntil(clients.claim());
+        });
+        self.addEventListener('fetch', e => {
+            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+        });
+    `)).then(() => {
+        console.log('✅ Service Worker registrado - Actualizaciones automáticas activadas');
+    });
+    
+    // Forzar recarga si hay nueva versión
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+    });
+}
+</script>
+
 </body>
 </html>
