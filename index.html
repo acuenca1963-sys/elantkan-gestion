@@ -1791,15 +1791,84 @@ function actualizarStats() { document.getElementById('statPerros').textContent =
 // IMPRESIÓN
 window.imprimirSeccion = (elementId) => {
     const element = document.getElementById(elementId);
-    if (!element) return;
-    const printContent = `<div style="padding: 20px;"><h1 style="color: #764ba2; margin-bottom: 20px;">ELANTKAN - Gestión Canina</h1><h2 style="margin-bottom: 20px;">${new Date().toLocaleDateString('es-ES')}</h2>${element.outerHTML}</div>`;
-    const originalContent = document.body.innerHTML;
-    document.body.innerHTML = printContent;
-    window.print();
-    document.body.innerHTML = originalContent;
-    location.reload();
-};
-window.imprimirFichaIndividual = () => {
+    if (!element) {
+        alert('❌ Elemento no encontrado');
+        return;
+    }
+    
+    // Crear ventana de impresión
+    const printWindow = window.open('', '_blank');
+    
+    // Obtener datos actuales de la tabla
+    let filasHTML = '';
+    reservasDB.forEach(r => {
+        const inicio = formatearFecha(r.inicio);
+        const fin = formatearFecha(r.fin);
+        const dias = r.dias || Math.ceil((new Date(r.fin) - new Date(r.inicio)) / (1000*60*60*24)) + 1;
+        const casetaInfo = r.caseta ? `🏪 ${r.caseta}` : '-';
+        const tipoLabel = r.tipo === 'hotel' ? '🏨' : r.tipo === 'guarderia' ? '🏠' : '🎓';
+        
+        filasHTML += `
+            <tr>
+                <td>${r.nombrePerro}</td>
+                <td>${tipoLabel} ${r.tipo}</td>
+                <td>${inicio}</td>
+                <td>${fin}</td>
+                <td>${dias}</td>
+                <td>${casetaInfo}</td>
+                <td>${r.precio}€</td>
+            </tr>
+        `;
+    });
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Lista de Reservas - Elantkan</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 40px; }
+                h1 { color: #764ba2; margin-bottom: 10px; }
+                h2 { color: #666; margin-bottom: 30px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th { background: #764ba2; color: white; padding: 12px; text-align: left; }
+                td { padding: 10px; border-bottom: 1px solid #ddd; }
+                tr:nth-child(even) { background: #f8f9fa; }
+                .total { font-weight: bold; margin-top: 20px; font-size: 16px; }
+            </style>
+        </head>
+        <body>
+            <h1>ELANTKAN - Gestión Canina</h1>
+            <h2>Lista de Reservas - ${new Date().toLocaleDateString('es-ES')}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Perro</th>
+                        <th>Tipo</th>
+                        <th>Inicio</th>
+                        <th>Fin</th>
+                        <th>Días</th>
+                        <th>Caseta</th>
+                        <th>Precio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${filasHTML}
+                </tbody>
+            </table>
+            <p class="total">Total: ${reservasDB.length} reserva(s)</p>
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+    printWindow.focus();
+    
+    setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+    }, 250);
+};window.imprimirFichaIndividual = () => {
     if (!perroIndividualActual) return;
     const p = perroIndividualActual;
     const fotoSrc = p.fotoUrl || p.foto || '';
