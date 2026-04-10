@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elantkan - Gestión Canina v1.4</title>
+    <title>Elantkan - Gestión Canina v1.5</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -25,6 +25,8 @@
         .login-box .secondary { background: #6c757d; }
         .login-box .error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin: 10px 0; display: none; }
         .login-box .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0; display: none; }
+        .login-box a { color: #764ba2; font-weight: bold; text-decoration: none; }
+        .login-box a:hover { text-decoration: underline; }
         #mainApp { display: none; }
         .header { text-align: center; padding: 20px; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; }
         .header img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid white; margin-bottom: 10px; }
@@ -288,9 +290,9 @@
                 <button type="submit">🔐 Iniciar Sesión</button>
             </form>
             
-            <p style="margin:20px 0;color:#666;font-size:14px;">
+            <p style="margin:20px 0;color:#666;font-size:14px;text-align:center;">
                 ¿No tienes cuenta? 
-                <a href="#" onclick="mostrarRegistro(); return false;" style="color:#764ba2;font-weight:bold;">Crear una aquí</a>
+                <a href="#" onclick="mostrarRegistro(); return false;">Crear una aquí</a>
             </p>
         </div>
         
@@ -302,9 +304,9 @@
                 <button type="submit" class="secondary">📝 Crear Cuenta</button>
             </form>
             
-            <p style="margin:20px 0;color:#666;font-size:14px;">
+            <p style="margin:20px 0;color:#666;font-size:14px;text-align:center;">
                 ¿Ya tienes cuenta? 
-                <a href="#" onclick="mostrarLogin(); return false;" style="color:#764ba2;font-weight:bold;">Iniciar Sesión</a>
+                <a href="#" onclick="mostrarLogin(); return false;">Iniciar Sesión</a>
             </p>
         </div>
     </div>
@@ -313,7 +315,7 @@
 <div id="mainApp">
     <div class="header">
         <div class="header-top">
-            <div><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><h1>ELANTKAN <span style="font-size:12px;opacity:0.8;">v1.4</span></h1><p>Hotel & Adiestramiento Canino</p></div>
+            <div><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><h1>ELANTKAN <span style="font-size:12px;opacity:0.8;">v1.5</span></h1><p>Hotel & Adiestramiento Canino</p></div>
             <div class="user-info"><span id="userEmail">usuario@email.com</span><button class="btn-logout" onclick="cerrarSesion()">🚪 Salir</button></div>
         </div>
     </div>
@@ -690,6 +692,17 @@ function formatearFecha(fechaISO) {
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
 }
 
+// MOSTRAR/OCULTAR FORMULARIOS
+window.mostrarRegistro = () => {
+    document.getElementById('loginFormContainer').style.display = 'none';
+    document.getElementById('registerFormContainer').style.display = 'block';
+};
+
+window.mostrarLogin = () => {
+    document.getElementById('loginFormContainer').style.display = 'block';
+    document.getElementById('registerFormContainer').style.display = 'none';
+};
+
 // LOGIN CON EVENT LISTENERS
 window.registrarse = async (e) => {
     if (e) e.preventDefault();
@@ -699,13 +712,17 @@ window.registrarse = async (e) => {
     mostrarLoading(true);
     try { 
         await createUserWithEmailAndPassword(auth, email, password); 
-        mostrarSuccess('✅ Cuenta creada. Inicia sesión.'); 
+        mostrarSuccess('✅ Cuenta creada. Ahora inicia sesión.'); 
         document.getElementById('loginEmail').value = email;
         document.getElementById('registerEmail').value = '';
         document.getElementById('registerPassword').value = '';
+        mostrarLoading(false);
+        mostrarLogin();
     }
-    catch (error) { mostrarError('❌ ' + error.message); }
-    mostrarLoading(false);
+    catch (error) { 
+        mostrarError('❌ ' + error.message); 
+        mostrarLoading(false);
+    }
 };
 
 window.iniciarSesion = async (e) => {
@@ -738,6 +755,7 @@ onAuthStateChanged(auth, (user) => {
         currentUser = null; 
         document.getElementById('loginScreen').style.display = 'flex'; 
         document.getElementById('mainApp').style.display = 'none'; 
+        mostrarLogin(); // Asegurar que se muestra login al salir
     }
 });
 
@@ -1918,7 +1936,7 @@ window.imprimirSeccion = (elementId) => {
         return;
     }
     
-    const printContent = `<div style="padding: 20px;"><h1 style="color: #764ba2; margin-bottom: 20px;">ELANTKAN - Gestión Canina v1.4</h1><h2 style="margin-bottom: 20px;">${new Date().toLocaleDateString('es-ES')}</h2>${element.outerHTML}</div>`;
+    const printContent = `<div style="padding: 20px;"><h1 style="color: #764ba2; margin-bottom: 20px;">ELANTKAN - Gestión Canina v1.5</h1><h2 style="margin-bottom: 20px;">${new Date().toLocaleDateString('es-ES')}</h2>${element.outerHTML}</div>`;
     const originalContent = document.body.innerHTML;
     document.body.innerHTML = printContent;
     window.print();
