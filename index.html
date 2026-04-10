@@ -1131,6 +1131,13 @@ window.buscarPerroOCliente = () => {
             html += `<strong>🔍 Perro buscado:</strong> ${perroDestacado.nombrePerro} | 🦴 ${perroDestacado.raza || 'Sin raza'} | 🔖 ${perroDestacado.microchip || 'Sin microchip'}`;
             html += `</p>`;
         }
+        // AÑADIR BOTONES DE ACCIÓN PARA CADA PERRO
+        html += `<div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">`;
+        perrosDelDueño.forEach(p => {
+            html += `<button class="btn btn-info" onclick="verPerro('${p.id}')" style="margin: 3px;">👁️ Ver ${p.nombrePerro}</button>`;
+            html += `<button class="btn btn-warning" onclick="editarPerro('${p.id}')" style="margin: 3px;">✏️ Editar ${p.nombrePerro}</button>`;
+        });
+        html += `</div>`;
         html += `</div>`;
     });
     resultado.innerHTML = html;
