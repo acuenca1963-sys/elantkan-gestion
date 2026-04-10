@@ -283,32 +283,32 @@
         <div class="success" id="loginSuccess"></div>
         
         <!-- LOGIN FORM -->
-        <div id="loginFormContainer">
-            <form id="loginForm">
-                <input type="email" id="loginEmail" placeholder="📧 Email" required>
-                <input type="password" id="loginPassword" placeholder="🔑 Contraseña" required>
-                <button type="submit">🔐 Iniciar Sesión</button>
-            </form>
-            
-            <p style="margin:20px 0;color:#666;font-size:14px;text-align:center;">
-                ¿No tienes cuenta? 
-                <a href="#" onclick="mostrarRegistro(); return false;">Crear una aquí</a>
-            </p>
-        </div>
-        
-        <!-- REGISTER FORM (hidden by default) -->
-        <div id="registerFormContainer" style="display:none;">
-            <form id="registerForm">
-                <input type="email" id="registerEmail" placeholder="📧 Email para registro" required>
-                <input type="password" id="registerPassword" placeholder="🔑 Contraseña (mín 6 caracteres)" required>
-                <button type="submit" class="secondary">📝 Crear Cuenta</button>
-            </form>
-            
-            <p style="margin:20px 0;color:#666;font-size:14px;text-align:center;">
-                ¿Ya tienes cuenta? 
-                <a href="#" onclick="mostrarLogin(); return false;">Iniciar Sesión</a>
-            </p>
-        </div>
+<div id="loginFormContainer">
+    <form onsubmit="iniciarSesion(event)">
+        <input type="email" id="loginEmail" placeholder="📧 Email" required>
+        <input type="password" id="loginPassword" placeholder="🔑 Contraseña" required>
+        <button type="submit">🔐 Iniciar Sesión</button>
+    </form>
+    
+    <p style="margin:20px 0;color:#666;font-size:14px;text-align:center;">
+        ¿No tienes cuenta? 
+        <a href="#" onclick="mostrarRegistro(); return false;">Crear una aquí</a>
+    </p>
+</div>
+
+<!-- REGISTER FORM (hidden by default) -->
+<div id="registerFormContainer" style="display:none;">
+    <form onsubmit="registrarse(event)">
+        <input type="email" id="registerEmail" placeholder="📧 Email para registro" required>
+        <input type="password" id="registerPassword" placeholder="🔑 Contraseña (mín 6 caracteres)" required>
+        <button type="submit" class="secondary">📝 Crear Cuenta</button>
+    </form>
+    
+    <p style="margin:20px 0;color:#666;font-size:14px;text-align:center;">
+        ¿Ya tienes cuenta? 
+        <a href="#" onclick="mostrarLogin(); return false;">Iniciar Sesión</a>
+    </p>
+</div>
     </div>
 </div>
 
