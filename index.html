@@ -281,20 +281,32 @@
         <div class="success" id="loginSuccess"></div>
         
         <!-- LOGIN FORM -->
-        <form id="loginForm">
-            <input type="email" id="loginEmail" placeholder="📧 Email" required>
-            <input type="password" id="loginPassword" placeholder="🔑 Contraseña" required>
-            <button type="submit">🔐 Iniciar Sesión</button>
-        </form>
+        <div id="loginFormContainer">
+            <form id="loginForm">
+                <input type="email" id="loginEmail" placeholder="📧 Email" required>
+                <input type="password" id="loginPassword" placeholder="🔑 Contraseña" required>
+                <button type="submit">🔐 Iniciar Sesión</button>
+            </form>
+            
+            <p style="margin:20px 0;color:#666;font-size:14px;">
+                ¿No tienes cuenta? 
+                <a href="#" onclick="mostrarRegistro(); return false;" style="color:#764ba2;font-weight:bold;">Crear una aquí</a>
+            </p>
+        </div>
         
-        <p style="margin:20px 0;color:#666;">¿No tienes cuenta?</p>
-        
-        <!-- REGISTER FORM -->
-        <form id="registerForm">
-            <input type="email" id="registerEmail" placeholder="📧 Email para registro" required>
-            <input type="password" id="registerPassword" placeholder="🔑 Contraseña (mín 6 caracteres)" required>
-            <button type="submit" class="secondary">📝 Crear Cuenta</button>
-        </form>
+        <!-- REGISTER FORM (hidden by default) -->
+        <div id="registerFormContainer" style="display:none;">
+            <form id="registerForm">
+                <input type="email" id="registerEmail" placeholder="📧 Email para registro" required>
+                <input type="password" id="registerPassword" placeholder="🔑 Contraseña (mín 6 caracteres)" required>
+                <button type="submit" class="secondary">📝 Crear Cuenta</button>
+            </form>
+            
+            <p style="margin:20px 0;color:#666;font-size:14px;">
+                ¿Ya tienes cuenta? 
+                <a href="#" onclick="mostrarLogin(); return false;" style="color:#764ba2;font-weight:bold;">Iniciar Sesión</a>
+            </p>
+        </div>
     </div>
 </div>
 
