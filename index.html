@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elantkan - Gestión Canina v1.5</title>
+    <title>Elantkan - Gestión Canina v1.6</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -283,39 +283,39 @@
         <div class="success" id="loginSuccess"></div>
         
         <!-- LOGIN FORM -->
-<div id="loginFormContainer">
-    <form onsubmit="iniciarSesion(event)">
-        <input type="email" id="loginEmail" placeholder="📧 Email" required>
-        <input type="password" id="loginPassword" placeholder="🔑 Contraseña" required>
-        <button type="submit">🔐 Iniciar Sesión</button>
-    </form>
-    
-    <p style="margin:20px 0;color:#666;font-size:14px;text-align:center;">
-        ¿No tienes cuenta? 
-        <a href="#" onclick="mostrarRegistro(); return false;">Crear una aquí</a>
-    </p>
-</div>
-
-<!-- REGISTER FORM (hidden by default) -->
-<div id="registerFormContainer" style="display:none;">
-    <form onsubmit="registrarse(event)">
-        <input type="email" id="registerEmail" placeholder="📧 Email para registro" required>
-        <input type="password" id="registerPassword" placeholder="🔑 Contraseña (mín 6 caracteres)" required>
-        <button type="submit" class="secondary">📝 Crear Cuenta</button>
-    </form>
-    
-    <p style="margin:20px 0;color:#666;font-size:14px;text-align:center;">
-        ¿Ya tienes cuenta? 
-        <a href="#" onclick="mostrarLogin(); return false;">Iniciar Sesión</a>
-    </p>
-</div>
+        <div id="loginFormContainer">
+            <form onsubmit="iniciarSesion(event)">
+                <input type="email" id="loginEmail" placeholder="📧 Email" required>
+                <input type="password" id="loginPassword" placeholder="🔑 Contraseña" required>
+                <button type="submit">🔐 Iniciar Sesión</button>
+            </form>
+            
+            <p style="margin:20px 0;color:#666;font-size:14px;text-align:center;">
+                ¿No tienes cuenta? 
+                <a href="#" onclick="mostrarRegistro(); return false;">Crear una aquí</a>
+            </p>
+        </div>
+        
+        <!-- REGISTER FORM (hidden by default) -->
+        <div id="registerFormContainer" style="display:none;">
+            <form onsubmit="registrarse(event)">
+                <input type="email" id="registerEmail" placeholder="📧 Email para registro" required>
+                <input type="password" id="registerPassword" placeholder="🔑 Contraseña (mín 6 caracteres)" required>
+                <button type="submit" class="secondary">📝 Crear Cuenta</button>
+            </form>
+            
+            <p style="margin:20px 0;color:#666;font-size:14px;text-align:center;">
+                ¿Ya tienes cuenta? 
+                <a href="#" onclick="mostrarLogin(); return false;">Iniciar Sesión</a>
+            </p>
+        </div>
     </div>
 </div>
 
 <div id="mainApp">
     <div class="header">
         <div class="header-top">
-            <div><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><h1>ELANTKAN <span style="font-size:12px;opacity:0.8;">v1.5</span></h1><p>Hotel & Adiestramiento Canino</p></div>
+            <div><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><h1>ELANTKAN <span style="font-size:12px;opacity:0.8;">v1.6</span></h1><p>Hotel & Adiestramiento Canino</p></div>
             <div class="user-info"><span id="userEmail">usuario@email.com</span><button class="btn-logout" onclick="cerrarSesion()">🚪 Salir</button></div>
         </div>
     </div>
@@ -386,7 +386,7 @@
                     <button onclick="mesAnterior()">◀ Anterior</button>
                     <button onclick="mesActual()">📍 Mes Actual</button>
                     <button onclick="mesSiguiente()">Siguiente ▶</button>
-                    <button class="btn-print" onclick="imprimirSeccion('calendarGrid')" style="margin-left: 10px;">🖨️ Imprimir</button>
+                    <button class="btn-print" onclick="imprimirCalendario()" style="margin-left: 10px;">🖨️ Imprimir</button>
                 </div>
             </div>
             <div class="calendar-leyenda">
@@ -571,13 +571,13 @@
 
 <div id="fichaIndividual" class="ficha-individual"></div>
 
-<!-- FACTURA PRINT TEMPLATE - CON TUS DATOS -->
+<!-- FACTURA PRINT TEMPLATE - CON TUS DATOS (SIN "HOTEL") -->
 <div id="facturaPrintTemplate" class="factura-print">
     <div class="factura-header">
         <div class="factura-logo">
             <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
             <h2>ELANTKAN</h2>
-            <p>Hotel & Adiestramiento Canino</p>
+            <p>Gestión Canina</p>
         </div>
         <div class="factura-empresa">
             <h3>Datos de la Empresa</h3>
@@ -703,9 +703,9 @@ window.mostrarLogin = () => {
     document.getElementById('registerFormContainer').style.display = 'none';
 };
 
-// LOGIN CON EVENT LISTENERS
+// LOGIN CON EVENT HANDLERS
 window.registrarse = async (e) => {
-    if (e) e.preventDefault();
+    if (e) { e.preventDefault(); e.stopPropagation(); }
     const email = document.getElementById('registerEmail').value;
     const password = document.getElementById('registerPassword').value;
     if (!email || !password || password.length < 6) { mostrarError('Email y contraseña (mín 6) requeridos'); return; }
@@ -726,14 +726,13 @@ window.registrarse = async (e) => {
 };
 
 window.iniciarSesion = async (e) => {
-    if (e) e.preventDefault();
+    if (e) { e.preventDefault(); e.stopPropagation(); }
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     if (!email || !password) { mostrarError('Email y contraseña requeridos'); return; }
     mostrarLoading(true);
     try { 
         await signInWithEmailAndPassword(auth, email, password);
-        // NO recargar - onAuthStateChanged se encarga
     }
     catch (error) { 
         mostrarError('❌ ' + error.message); 
@@ -755,7 +754,7 @@ onAuthStateChanged(auth, (user) => {
         currentUser = null; 
         document.getElementById('loginScreen').style.display = 'flex'; 
         document.getElementById('mainApp').style.display = 'none'; 
-        mostrarLogin(); // Asegurar que se muestra login al salir
+        mostrarLogin();
     }
 });
 
@@ -1053,14 +1052,12 @@ window.buscarPerroParaReserva = () => {
         return;
     }
     
-    // Mostrar perros encontrados
     let html = '';
     perrosEncontrados.forEach(p => {
         html += `<div class="buscador-perros-item" onclick="seleccionarPerroParaReserva('${p.id}', '${p.nombrePerro}', '${p.nombreDueno}', '${p.telefono || ''}')" style="cursor: pointer; border-bottom: 2px solid #764ba2;">
             🐕 <strong>${p.nombrePerro}</strong> - 👤 ${p.nombreDueno}
         </div>`;
         
-        // Buscar reservas de ESTE perro
         const reservasDelPerro = reservasDB.filter(r => r.idPerro === p.id && r.fin >= new Date().toISOString().split('T')[0]).sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
         
         if (reservasDelPerro.length > 0) {
@@ -1226,14 +1223,12 @@ window.buscarPerroOCliente = () => {
             html += `<strong>🔍 Perro buscado:</strong> ${perroDestacado.nombrePerro} | 🦴 ${perroDestacado.raza || 'Sin raza'} | 🔖 ${perroDestacado.microchip || 'Sin microchip'}`;
             html += `</p>`;
         }
-        // AÑADIR BOTONES DE ACCIÓN PARA CADA PERRO
         html += `<div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">`;
         perrosDelDueño.forEach(p => {
             html += `<button class="btn btn-info" onclick="verPerro('${p.id}')" style="margin: 3px;">👁️ Ver ${p.nombrePerro}</button>`;
             html += `<button class="btn btn-warning" onclick="editarPerro('${p.id}')" style="margin: 3px;">✏️ Editar ${p.nombrePerro}</button>`;
         });
-        html += `</div>`;
-        html += `</div>`;
+        html += `</div></div>`;
     });
     resultado.innerHTML = html;
 };
@@ -1563,7 +1558,6 @@ function mostrarReservas() {
         const casetaInfo = r.caseta ? `🏪 ${r.caseta}` : '-';
         const grupoBadge = r.grupoId ? `<br><span class="grupo-badge">🔗 Grupo</span>` : '';
         
-        // FORMATEAR FECHAS A DD/MM/YYYY
         const inicio = formatearFecha(r.inicio);
         const fin = formatearFecha(r.fin);
         
@@ -1595,10 +1589,7 @@ window.mostrarHistorial = () => {
     historial.forEach(r => {
         const estado = r.fin < hoy ? '✅ Completada' : r.inicio > hoy ? '📅 Futura' : '🔄 En curso';
         const tipoLabel = r.tipo === 'hotel' ? '🏨' : r.tipo === 'guarderia' ? '🏠' : r.tipo === 'clase-suelta' ? '🎓' : r.tipo === 'pack-10' ? '📚' : r.tipo === 'pack-20' ? '📖' : '📅';
-        
-        // FORMATEAR FECHAS
         const inicio = formatearFecha(r.inicio);
-        
         tbody.innerHTML += `<tr><td>${inicio}</td><td>${r.nombreDueno}</td><td>${r.nombrePerro}</td><td>${tipoLabel} ${r.tipo}</td><td>${r.dias || '-'}</td><td><strong>${r.precio}€</strong></td><td>${estado}</td></tr>`;
     });
     const resultado = document.getElementById('resultadoHistorial');
@@ -1607,7 +1598,7 @@ window.mostrarHistorial = () => {
 window.buscarEnHistorial = () => { mostrarHistorial(); };
 window.limpiarFiltrosHistorial = () => { document.getElementById('buscarHistorial').value = ''; document.getElementById('historialDesde').value = ''; document.getElementById('historialHasta').value = ''; mostrarHistorial(); };
 
-// FACTURAS - CORREGIDO CON IVA AUTOMÁTICO
+// FACTURAS
 window.generarFactura = async () => { 
     try { 
         const cliente = document.getElementById('facturaDueno').value;
@@ -1854,7 +1845,7 @@ function mostrarSuccess(m) { const e = document.getElementById('loginSuccess'); 
 function mostrarLoading(s) { document.getElementById('loadingScreen').style.display = s ? 'flex' : 'none'; }
 function actualizarStats() { document.getElementById('statPerros').textContent = perrosDB.length; document.getElementById('statDuenos').textContent = [...new Set(perrosDB.map(p => p.nombreDueno))].length; const hoy = new Date().toISOString().split('T')[0]; document.getElementById('statReservas').textContent = reservasDB.filter(r => r.fin >= hoy && r.completadas < r.total).length; }
 
-// IMPRESIÓN DE LISTA DE RESERVAS (YA FUNCIONA - NO TOCAR)
+// IMPRESIÓN DE LISTA DE RESERVAS
 window.imprimirListaReservas = () => {
     const printWindow = window.open('', '_blank');
     
@@ -1866,119 +1857,89 @@ window.imprimirListaReservas = () => {
         const casetaInfo = r.caseta ? `🏪 ${r.caseta}` : '-';
         const tipoLabel = r.tipo === 'hotel' ? '🏨' : r.tipo === 'guarderia' ? '🏠' : '🎓';
         
-        filasHTML += `
-            <tr>
-                <td>${r.nombrePerro}</td>
-                <td>${tipoLabel} ${r.tipo}</td>
-                <td>${inicio}</td>
-                <td>${fin}</td>
-                <td>${dias}</td>
-                <td>${casetaInfo}</td>
-                <td>${r.precio}€</td>
-            </tr>
-        `;
+        filasHTML += `<tr><td>${r.nombrePerro}</td><td>${tipoLabel} ${r.tipo}</td><td>${inicio}</td><td>${fin}</td><td>${dias}</td><td>${casetaInfo}</td><td>${r.precio}€</td></tr>`;
     });
     
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Lista de Reservas - Elantkan</title>
-            <style>
-                body { font-family: Arial, sans-serif; padding: 40px; }
-                h1 { color: #764ba2; margin-bottom: 10px; }
-                h2 { color: #666; margin-bottom: 30px; }
-                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                th { background: #764ba2; color: white; padding: 12px; text-align: left; }
-                td { padding: 10px; border-bottom: 1px solid #ddd; }
-                tr:nth-child(even) { background: #f8f9fa; }
-                .total { font-weight: bold; margin-top: 20px; font-size: 16px; }
-            </style>
-        </head>
-        <body>
-            <h1>ELANTKAN - Gestión Canina</h1>
-            <h2>Lista de Reservas - ${new Date().toLocaleDateString('es-ES')}</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Perro</th>
-                        <th>Tipo</th>
-                        <th>Inicio</th>
-                        <th>Fin</th>
-                        <th>Días</th>
-                        <th>Caseta</th>
-                        <th>Precio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${filasHTML}
-                </tbody>
-            </table>
-            <p class="total">Total: ${reservasDB.length} reserva(s)</p>
-        </body>
-        </html>
-    `);
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>Lista de Reservas</title><style>body{font-family:Arial,sans-serif;padding:40px}h1{color:#764ba2;margin-bottom:10px}h2{color:#666;margin-bottom:30px}table{width:100%;border-collapse:collapse;margin-top:20px}th{background:#764ba2;color:white;padding:12px;text-align:left}td{padding:10px;border-bottom:1px solid #ddd}tr:nth-child(even){background:#f8f9fa}.total{font-weight:bold;margin-top:20px;font-size:16px}</style></head><body><h1>ELANTKAN - Gestión Canina</h1><h2>Lista de Reservas - ${new Date().toLocaleDateString('es-ES')}</h2><table><thead><tr><th>Perro</th><th>Tipo</th><th>Inicio</th><th>Fin</th><th>Días</th><th>Caseta</th><th>Precio</th></tr></thead><tbody>${filasHTML}</tbody></table><p class="total">Total: ${reservasDB.length} reserva(s)</p></body></html>`);
     
     printWindow.document.close();
     printWindow.focus();
-    
-    setTimeout(() => {
-        printWindow.print();
-        printWindow.close();
-    }, 250);
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 250);
 };
 
-// IMPRESIÓN
-window.imprimirSeccion = (elementId) => {
-    const element = document.getElementById(elementId);
-    if (!element) {
-        alert('❌ Elemento no encontrado');
-        return;
+// IMPRESIÓN DE CALENDARIO (HOTEL)
+window.imprimirCalendario = () => {
+    const printWindow = window.open('', '_blank');
+    
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
+    const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    
+    let gridHTML = '';
+    const diasSemana = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    diasSemana.forEach(d => { gridHTML += `<div style="background:#764ba2;color:white;padding:10px;text-align:center;font-weight:bold">${d}</div>`; });
+    
+    const primerDia = new Date(year, month, 1).getDay();
+    const totalDias = new Date(year, month + 1, 0).getDate();
+    
+    for (let i = 0; i < primerDia; i++) { gridHTML += `<div style="background:#f8f9fa;padding:10px"></div>`; }
+    
+    for (let dia = 1; dia <= totalDias; dia++) {
+        const fechaStr = `${year}-${String(month+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+        const ocupacion = reservasDB.filter(r => r.tipo === 'hotel' && fechaStr >= r.inicio && fechaStr <= r.fin && r.completadas < r.total).length;
+        let color = ocupacion >= 15 ? '#dc3545' : ocupacion >= 11 ? '#f8d7da' : ocupacion >= 6 ? '#fff3cd' : '#d4edda';
+        gridHTML += `<div style="background:white;border:2px solid #e9ecef;padding:10px;min-height:80px"><div style="font-weight:bold">${dia}</div><div style="font-size:11px;padding:3px 8px;border-radius:10px;background:${color};color:${ocupacion>=15?'white':'#333'}">${ocupacion}/15</div></div>`;
     }
     
-    const printContent = `<div style="padding: 20px;"><h1 style="color: #764ba2; margin-bottom: 20px;">ELANTKAN - Gestión Canina v1.5</h1><h2 style="margin-bottom: 20px;">${new Date().toLocaleDateString('es-ES')}</h2>${element.outerHTML}</div>`;
-    const originalContent = document.body.innerHTML;
-    document.body.innerHTML = printContent;
-    window.print();
-    document.body.innerHTML = originalContent;
-    location.reload();
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>Calendario Hotel</title><style>body{font-family:Arial,sans-serif;padding:40px}h1{color:#764ba2;margin-bottom:10px}h2{color:#666;margin-bottom:30px}.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.day{background:white;border:2px solid #e9ecef;border-radius:8px;padding:10px;min-height:80px}</style></head><body><h1>ELANTKAN - Calendario Hotel</h1><h2>${meses[month]} ${year}</h2><div class="grid">${gridHTML}</div></body></html>`);
+    
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 250);
 };
+
+// IMPRESIÓN GENERAL
+window.imprimirSeccion = (elementId) => {
+    const element = document.getElementById(elementId);
+    if (!element) { alert('❌ Elemento no encontrado'); return; }
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>Imprimir</title><style>body{font-family:Arial,sans-serif;padding:40px}table{width:100%;border-collapse:collapse}th{background:#764ba2;color:white;padding:12px;text-align:left}td{padding:10px;border-bottom:1px solid #ddd}</style></head><body>${element.outerHTML}</body></html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 250);
+};
+
+// IMPRESIÓN FICHA INDIVIDUAL
 window.imprimirFichaIndividual = () => {
     if (!perroIndividualActual) return;
     const p = perroIndividualActual;
-    const fotoSrc = p.fotoUrl || p.foto || '';
-    const fotoHtml = fotoSrc ? `<img src="${fotoSrc}" style="width:150px;height:150px;border-radius:50%;object-fit:cover;border:4px solid #764ba2;margin:0 auto 20px;display:block;">` : '';
-    const printContent = `<div style="padding: 40px; font-family: Arial, sans-serif;"><h1 style="color: #764ba2; text-align: center; margin-bottom: 30px;">ELANTKAN - Ficha de Perro</h1>${fotoHtml}<div style="border: 2px solid #764ba2; padding: 20px; border-radius: 10px;"><h2 style="color: #1e3c72; margin-bottom: 20px;">🐕 ${p.nombrePerro}</h2><p><strong>Raza:</strong> ${p.raza || '-'}</p><p><strong>Edad:</strong> ${p.fechaNacimiento ? calcularEdad(p.fechaNacimiento) : (p.edad || '-')}</p><p><strong>Fecha Nacimiento:</strong> ${p.fechaNacimiento || '-'}</p><p><strong>Microchip:</strong> ${p.microchip || '-'}</p><p><strong>Pasaporte:</strong> ${p.pasaporte || '-'}</p><hr style="margin: 20px 0; border: 1px solid #ddd;"><h3 style="color: #1e3c72; margin-bottom: 10px;">👤 Dueño</h3><p><strong>Nombre:</strong> ${p.nombreDueno}</p><p><strong>DNI:</strong> ${p.dniDueno || '-'}</p><p><strong>Teléfono:</strong> ${p.telefono || '-'}</p><p><strong>Email:</strong> ${p.email || '-'}</p><p><strong>Dirección:</strong> ${p.direccion || '-'}</p><hr style="margin: 20px 0; border: 1px solid #ddd;"><h3 style="color: #1e3c72; margin-bottom: 10px;">🏥 Veterinario</h3><p><strong>Clínica:</strong> ${p.veterinario || '-'}</p><p><strong>Notas:</strong> ${p.notas || '-'}</p><p style="margin-top: 30px; text-align: right; color: #666;">Fecha: ${new Date().toLocaleDateString('es-ES')}</p></div></div>`;
-    const originalContent = document.body.innerHTML;
-    document.body.innerHTML = printContent;
-    window.print();
-    document.body.innerHTML = originalContent;
-    location.reload();
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>Ficha ${p.nombrePerro}</title><style>body{font-family:Arial,sans-serif;padding:40px}h1{color:#764ba2}h2{color:#1e3c72;margin:20px 0}p{margin:5px 0}hr{margin:20px 0;border:1px solid #ddd}</style></head><body><h1>ELANTKAN - Ficha de Perro</h1><h2>🐕 ${p.nombrePerro}</h2><p><strong>Raza:</strong> ${p.raza||'-'}</p><p><strong>Edad:</strong> ${p.fechaNacimiento?calcularEdad(p.fechaNacimiento):p.edad||'-'}</p><p><strong>Microchip:</strong> ${p.microchip||'-'}</p><p><strong>Pasaporte:</strong> ${p.pasaporte||'-'}</p><hr><h3>👤 Dueño</h3><p><strong>Nombre:</strong> ${p.nombreDueno}</p><p><strong>Teléfono:</strong> ${p.telefono||'-'}</p><p><strong>Email:</strong> ${p.email||'-'}</p><p><strong>Dirección:</strong> ${p.direccion||'-'}</p><hr><p><strong>Notas:</strong> ${p.notas||'-'}</p></body></html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 250);
 };
+
+// IMPRESIÓN RESERVA INDIVIDUAL
 window.imprimirReservaIndividual = () => {
     if (!reservaIndividualActual) return;
     const r = reservaIndividualActual;
-    const printContent = `<div style="padding: 40px; font-family: Arial, sans-serif;"><h1 style="color: #764ba2; text-align: center; margin-bottom: 30px;">ELANTKAN - Reserva</h1><div style="border: 2px solid #764ba2; padding: 20px; border-radius: 10px;"><h2 style="color: #1e3c72; margin-bottom: 20px;">📋 ${r.nombrePerro}</h2><p><strong>Tipo:</strong> ${r.tipo}</p><p><strong>Inicio:</strong> ${formatearFecha(r.inicio)}</p><p><strong>Fin:</strong> ${formatearFecha(r.fin)}</p><p><strong>Días:</strong> ${r.dias || '-'}</p><p><strong>Precio:</strong> ${r.precio}€</p><p><strong>Caseta:</strong> ${r.caseta || '-'}</p><p><strong>Notas:</strong> ${r.notas || '-'}</p><hr style="margin: 20px 0; border: 1px solid #ddd;"><h3 style="color: #1e3c72; margin-bottom: 10px;">👤 Cliente</h3><p><strong>Nombre:</strong> ${r.nombreDueno}</p><p><strong>Teléfono:</strong> ${r.telefono || '-'}</p><p style="margin-top: 30px; text-align: right; color: #666;">Fecha: ${new Date().toLocaleDateString('es-ES')}</p></div></div>`;
-    const originalContent = document.body.innerHTML;
-    document.body.innerHTML = printContent;
-    window.print();
-    document.body.innerHTML = originalContent;
-    location.reload();
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>Reserva ${r.nombrePerro}</title><style>body{font-family:Arial,sans-serif;padding:40px}h1{color:#764ba2}h2{color:#1e3c72;margin:20px 0}p{margin:5px 0}hr{margin:20px 0;border:1px solid #ddd}</style></head><body><h1>ELANTKAN - Reserva</h1><h2>📋 ${r.nombrePerro}</h2><p><strong>Tipo:</strong> ${r.tipo}</p><p><strong>Inicio:</strong> ${formatearFecha(r.inicio)}</p><p><strong>Fin:</strong> ${formatearFecha(r.fin)}</p><p><strong>Precio:</strong> ${r.precio}€</p><p><strong>Caseta:</strong> ${r.caseta||'-'}</p><hr><p><strong>Dueño:</strong> ${r.nombreDueno}</p><p><strong>Teléfono:</strong> ${r.telefono||'-'}</p><p><strong>Notas:</strong> ${r.notas||'-'}</p></body></html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); printWindow.close(); }, 250);
 };
 
-// IMPRESIÓN DE FACTURAS - CON DISEÑO PROFESIONAL
-function actualizarContadorFacturas() { const count = document.getElementById('facturasSeleccionadasCount'); if (count) { count.textContent = `${facturasSeleccionadas.length} seleccionada${facturasSeleccionadas.length !== 1 ? 's' : ''}`; } }
+// IMPRESIÓN FACTURAS
+function actualizarContadorFacturas() { const count = document.getElementById('facturasSeleccionadasCount'); if (count) { count.textContent = `${facturasSeleccionadas.length} seleccionada${facturasSeleccionadas.length!==1?'s':''}`; } }
 window.toggleSeleccionFactura = (id) => { if (facturasSeleccionadas.includes(id)) { facturasSeleccionadas = facturasSeleccionadas.filter(f => f !== id); } else { facturasSeleccionadas.push(id); } actualizarContadorFacturas(); };
 window.seleccionarTodasFacturas = (seleccionar) => { if (seleccionar) { facturasSeleccionadas = facturasDB.map(f => f.id); } else { facturasSeleccionadas = []; } mostrarFacturas(); actualizarContadorFacturas(); };
 window.imprimirTodasFacturas = () => { if (facturasDB.length === 0) { alert('❌ No hay facturas para imprimir'); return; } facturasSeleccionadas = facturasDB.map(f => f.id); imprimirFacturasSeleccionadas(); };
 window.imprimirFacturasSeleccionadas = () => {
     if (facturasSeleccionadas.length === 0) { alert('❌ Selecciona al menos una factura'); return; }
-    
     const f = facturasDB.find(x => x.id === facturasSeleccionadas[0]);
-    if (!f) {
-        alert('❌ Factura no encontrada');
-        return;
-    }
+    if (!f) { alert('❌ Factura no encontrada'); return; }
     
     const baseNum = parseFloat(f.baseImponible) || 0;
     const ivaNum = parseFloat(f.iva) || 0;
@@ -2012,30 +1973,5 @@ window.imprimirFacturasSeleccionadas = () => {
     }, 500);
 };
 </script>
-
-<!-- SERVICE WORKER PARA ACTUALIZACIONES AUTOMÁTICAS -->
-<script>
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('data:text/javascript,' + encodeURIComponent(`
-        self.addEventListener('install', e => {
-            self.skipWaiting();
-        });
-        self.addEventListener('activate', e => {
-            e.waitUntil(clients.claim());
-        });
-        self.addEventListener('fetch', e => {
-            e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-        });
-    `)).then(() => {
-        console.log('✅ Service Worker registrado - Actualizaciones automáticas activadas');
-    });
-    
-    // Forzar recarga si hay nueva versión
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-        window.location.reload();
-    });
-}
-</script>
-
 </body>
 </html>
