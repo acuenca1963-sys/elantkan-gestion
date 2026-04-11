@@ -130,8 +130,6 @@
         .perro-seleccionado-info { background: #e8f5e9; padding: 10px; border-radius: 5px; margin-top: 10px; display: none; }
         .edad-calculada { background: #f0f7ff; padding: 8px; border-radius: 5px; font-weight: bold; color: #764ba2; min-width: 100px; text-align: center; }
         .dueño-seleccionado-info { background: #e8f5e9; padding: 10px; border-radius: 5px; margin-top: 10px; display: none; }
-        .perro-item { background: white; padding: 10px; margin: 5px 0; border-radius: 5px; border-left: 3px solid #764ba2; display: flex; justify-content: space-between; align-items: center; }
-        .perro-item.selected { background: #e8f5e9; border-left-color: #28a745; }
         
         @media print {
             body * { visibility: hidden; }
@@ -768,12 +766,11 @@ window.calcularPrecioConIVA = () => {
     const precio = parseFloat(servicioSelect.value) || 0;
     const base = precio / 1.21;
     const iva = base * 0.21;
-    const total = precio;
-    
     document.getElementById('baseImponible').value = base.toFixed(2);
     document.getElementById('iva').value = iva.toFixed(2);
-    document.getElementById('total').value = total.toFixed(2);
+    document.getElementById('total').value = precio.toFixed(2);
 };
+
 document.getElementById('total')?.addEventListener('input', () => {
     const total = parseFloat(document.getElementById('total').value) || 0;
     const base = total / 1.21;
@@ -781,6 +778,7 @@ document.getElementById('total')?.addEventListener('input', () => {
     document.getElementById('baseImponible').value = base.toFixed(2);
     document.getElementById('iva').value = iva.toFixed(2);
 });
+
 window.abrirCamara = () => { document.getElementById('fotoInputCamara').click(); };
 window.abrirGaleria = () => { document.getElementById('fotoInputGaleria').click(); };
 window.abrirCamaraEditar = () => { document.getElementById('editFotoInputCamara').click(); };
@@ -1776,3 +1774,6 @@ window.imprimirFacturasSeleccionadas = () => {
     
     printWindow.document.close();
 };
+</script>
+</body>
+</html>
