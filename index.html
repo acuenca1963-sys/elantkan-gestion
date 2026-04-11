@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elantkan - Gestión Canina v1.6</title>
+    <title>Elantkan - Gestión Canina v1.7</title>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -315,7 +315,7 @@
 <div id="mainApp">
     <div class="header">
         <div class="header-top">
-            <div><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><h1>ELANTKAN <span style="font-size:12px;opacity:0.8;">v1.6</span></h1><p>Hotel & Adiestramiento Canino</p></div>
+            <div><img src="logo.png" alt="Logo" onerror="this.style.display='none'"><h1>ELANTKAN <span style="font-size:12px;opacity:0.8;">v1.7</span></h1><p>Hotel & Adiestramiento Canino</p></div>
             <div class="user-info"><span id="userEmail">usuario@email.com</span><button class="btn-logout" onclick="cerrarSesion()">🚪 Salir</button></div>
         </div>
     </div>
@@ -571,7 +571,7 @@
 
 <div id="fichaIndividual" class="ficha-individual"></div>
 
-<!-- FACTURA PRINT TEMPLATE - CON TUS DATOS (SIN "HOTEL") -->
+<!-- FACTURA PRINT TEMPLATE - SIN "HOTEL" -->
 <div id="facturaPrintTemplate" class="factura-print">
     <div class="factura-header">
         <div class="factura-logo">
@@ -696,64 +696,96 @@ function formatearFecha(fechaISO) {
 window.mostrarRegistro = () => {
     document.getElementById('loginFormContainer').style.display = 'none';
     document.getElementById('registerFormContainer').style.display = 'block';
+    document.getElementById('loginError').style.display = 'none';
+    document.getElementById('loginSuccess').style.display = 'none';
 };
 
 window.mostrarLogin = () => {
     document.getElementById('loginFormContainer').style.display = 'block';
     document.getElementById('registerFormContainer').style.display = 'none';
+    document.getElementById('loginError').style.display = 'none';
+    document.getElementById('loginSuccess').style.display = 'none';
 };
 
-// LOGIN CON EVENT HANDLERS
-window.registrarse = async (e) => {
-    if (e) { e.preventDefault(); e.stopPropagation(); }
-    const email = document.getElementById('registerEmail').value;
-    const password = document.getElementById('registerPassword').value;
-    if (!email || !password || password.length < 6) { mostrarError('Email y contraseña (mín 6) requeridos'); return; }
-    mostrarLoading(true);
-    try { 
-        await createUserWithEmailAndPassword(auth, email, password); 
-        mostrarSuccess('✅ Cuenta creada. Ahora inicia sesión.'); 
-        document.getElementById('loginEmail').value = email;
-        document.getElementById('registerEmail').value = '';
-        document.getElementById('registerPassword').value = '';
-        mostrarLoading(false);
-        mostrarLogin();
-    }
-    catch (error) { 
-        mostrarError('❌ ' + error.message); 
-        mostrarLoading(false);
-    }
-};
-
+// LOGIN - CORREGIDO
 window.iniciarSesion = async (e) => {
-    if (e) { e.preventDefault(); e.stopPropagation(); }
-    const email = document.getElementById('loginEmail').value;
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
-    if (!email || !password) { mostrarError('Email y contraseña requeridos'); return; }
-    mostrarLoading(true);
+    
+    if (!email || !password) { 
+        mostrarError('Email y contraseña requeridos'); 
+        return; 
+    }
+    
     try { 
         await signInWithEmailAndPassword(auth, email, password);
     }
     catch (error) { 
+        console.error('Error login:', error);
         mostrarError('❌ ' + error.message); 
-        mostrarLoading(false);
+    }
+};
+
+// REGISTRO - CORREGIDO
+window.registrarse = async (e) => {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    const email = document.getElementById('registerEmail').value.trim();
+    const password = document.getElementById('registerPassword').value;
+    
+    if (!email || !password) { 
+        mostrarError('Email y contraseña requeridos'); 
+        return; 
+    }
+    
+    if (password.length < 6) { 
+        mostrarError('La contraseña debe tener al menos 6 caracteres'); 
+        return; 
+    }
+    
+    try { 
+        await createUserWithEmailAndPassword(auth, email, password);
+        mostrarSuccess('✅ Cuenta creada. Inicia sesión.');
+        document.getElementById('registerEmail').value = '';
+        document.getElementById('registerPassword').value = '';
+        setTimeout(() => {
+            mostrarLogin();
+            document.getElementById('loginEmail').value = email;
+        }, 2000);
+    }
+    catch (error) { 
+        console.error('Error registro:', error);
+        mostrarError('❌ ' + error.message); 
     }
 };
 
 window.cerrarSesion = async () => { await signOut(auth); window.location.reload(); };
 
+// AUTH STATE CHANGE - CORREGIDO
 onAuthStateChanged(auth, (user) => {
+    console.log('Auth state changed:', user ? 'LOGGED IN' : 'LOGGED OUT');
+    
     if (user) { 
-        currentUser = user; 
-        document.getElementById('loginScreen').style.display = 'none'; 
-        document.getElementById('mainApp').style.display = 'block'; 
-        document.getElementById('userEmail').textContent = user.email; 
-        cargarDatos(); 
+        currentUser = user;
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        document.getElementById('userEmail').textContent = user.email;
+        cargarDatos();
     }
     else { 
-        currentUser = null; 
-        document.getElementById('loginScreen').style.display = 'flex'; 
-        document.getElementById('mainApp').style.display = 'none'; 
+        currentUser = null;
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('mainApp').style.display = 'none';
         mostrarLogin();
     }
 });
@@ -1761,9 +1793,9 @@ function cargarContactos() {
 }
 window.toggleSeleccion = (checkbox) => { const nombre = checkbox.dataset.nombre; const telefono = checkbox.dataset.telefono; if (checkbox.checked) { if (!contactosSeleccionados.includes(nombre)) { contactosSeleccionados.push(nombre); } document.getElementById('contactoNombre').value = nombre; document.getElementById('contactoTelefono').value = telefono; } else { contactosSeleccionados = contactosSeleccionados.filter(n => n !== nombre); } actualizarContador(); };
 window.selectAll = (seleccionar) => { document.querySelectorAll('.contact-checkbox').forEach(cb => { cb.checked = seleccionar; toggleSeleccion(cb); }); };
-window.actualizarContador = () => { const count = document.getElementById('selectedCount'); if (count) { count.textContent = `${contactosSeleccionados.length} contacto${contactosSeleccionados.length !== 1 ? 's' : ''}`; } };
+window.actualizarContador = () => { const count = document.getElementById('selectedCount'); if (count) { count.textContent = `${contactosSeleccionados.length} contacto${contactosSeleccionados.length!==1?'s':''}`; } };
 window.whatsapp = (tel, nombre, restantes) => { if (!tel) { alert('❌ Sin teléfono'); return; } let telefonoLimpio = tel.replace(/[\s\-\(\)]/g, ''); if (!telefonoLimpio.startsWith('34') && !telefonoLimpio.startsWith('+')) { telefonoLimpio = '34' + telefonoLimpio; } if (telefonoLimpio.startsWith('+34')) { telefonoLimpio = telefonoLimpio.substring(1); } const msg = restantes ? `Hola ${nombre}, quedan ${restantes} clases/días.` : `Hola ${nombre}, te contacto desde Elantkan.`; const url = `https://api.whatsapp.com/send?phone=${telefonoLimpio}&text=${encodeURIComponent(msg)}`; window.open(url, '_blank'); };
-window.enviarMasivo = () => { const mensaje = document.getElementById('mensajeMasivo').value; if (!mensaje) { alert('❌ Escribe un mensaje'); return; } if (contactosSeleccionados.length === 0) { alert('❌ Selecciona al menos un contacto'); return; } const contactos = perrosDB.filter(p => contactosSeleccionados.includes(p.nombreDueno) && p.telefono); const telefonosUnicos = [...new Set(contactos.map(c => c.telefono))]; if (!confirm(`¿Enviar mensaje a ${telefonosUnicos.length} contacto${telefonosUnicos.length !== 1 ? 's' : ''}?`)) return; let actual = 0; function enviar() { if (actual >= telefonosUnicos.length) { alert('✅ Envío completado'); return; } const telefono = telefonosUnicos[actual]; let telefonoLimpio = telefono.replace(/[\s\-\(\)]/g, ''); if (!telefonoLimpio.startsWith('34') && !telefonoLimpio.startsWith('+')) { telefonoLimpio = '34' + telefonoLimpio; } if (telefonoLimpio.startsWith('+34')) { telefonoLimpio = telefonoLimpio.substring(1); } const url = `https://api.whatsapp.com/send?phone=${telefonoLimpio}&text=${encodeURIComponent(mensaje)}`; window.open(url, '_blank'); actual++; setTimeout(enviar, 2000); } enviar(); };
+window.enviarMasivo = () => { const mensaje = document.getElementById('mensajeMasivo').value; if (!mensaje) { alert('❌ Escribe un mensaje'); return; } if (contactosSeleccionados.length === 0) { alert('❌ Selecciona al menos un contacto'); return; } const contactos = perrosDB.filter(p => contactosSeleccionados.includes(p.nombreDueno) && p.telefono); const telefonosUnicos = [...new Set(contactos.map(c => c.telefono))]; if (!confirm(`¿Enviar mensaje a ${telefonosUnicos.length} contacto${telefonosUnicos.length!==1?'s':''}?`)) return; let actual = 0; function enviar() { if (actual >= telefonosUnicos.length) { alert('✅ Envío completado'); return; } const telefono = telefonosUnicos[actual]; let telefonoLimpio = telefono.replace(/[\s\-\(\)]/g, ''); if (!telefonoLimpio.startsWith('34') && !telefonoLimpio.startsWith('+')) { telefonoLimpio = '34' + telefonoLimpio; } if (telefonoLimpio.startsWith('+34')) { telefonoLimpio = telefonoLimpio.substring(1); } const url = `https://api.whatsapp.com/send?phone=${telefonoLimpio}&text=${encodeURIComponent(mensaje)}`; window.open(url, '_blank'); actual++; setTimeout(enviar, 2000); } enviar(); };
 window.enviarWhatsAppIndividual = () => { const telefono = document.getElementById('contactoTelefono').value; const nombre = document.getElementById('contactoNombre').value; const mensaje = document.getElementById('mensajeIndividual').value; if (!telefono) { alert('❌ Selecciona un contacto de la lista'); return; } if (!mensaje) { alert('❌ Escribe un mensaje'); return; } let telefonoLimpio = telefono.replace(/[\s\-\(\)]/g, ''); if (!telefonoLimpio.startsWith('34') && !telefonoLimpio.startsWith('+')) { telefonoLimpio = '34' + telefonoLimpio; } if (telefonoLimpio.startsWith('+34')) { telefonoLimpio = telefonoLimpio.substring(1); } const url = `https://api.whatsapp.com/send?phone=${telefonoLimpio}&text=${encodeURIComponent(mensaje)}`; window.open(url, '_blank'); };
 window.filtrarContactos = () => { const texto = document.getElementById('buscarContacto').value.toLowerCase(); document.querySelectorAll('.contact-item').forEach(item => { item.style.display = item.textContent.toLowerCase().includes(texto) ? 'flex' : 'none'; }); };
 
@@ -1774,17 +1806,17 @@ function mostrarCalendario() {
     grid.innerHTML = ''; 
     const year = calendarDate.getFullYear(); 
     const month = calendarDate.getMonth(); 
-    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
     document.getElementById('calendarMonthYear').textContent = `${meses[month]} ${year}`;
-    const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const diasSemana = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
     diasSemana.forEach(dia => { const div = document.createElement('div'); div.className = 'calendar-day-name'; div.textContent = dia; grid.appendChild(div); });
     const primerDia = new Date(year, month, 1).getDay();
     const totalDias = new Date(year, month + 1, 0).getDate();
     const hoy = new Date();
     for (let i = 0; i < primerDia; i++) { const div = document.createElement('div'); div.className = 'calendar-day empty'; grid.appendChild(div); }
     for (let dia = 1; dia <= totalDias; dia++) { 
-        const fechaStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-        const ocupacion = contarOcupacionPorDia(fechaStr);
+        const fechaStr = `${year}-${String(month+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+        const ocupacion = reservasDB.filter(r => r.tipo === 'hotel' && fechaStr >= r.inicio && fechaStr <= r.fin && r.completadas < r.total).length;
         let claseOcupacion = 'baja';
         if (ocupacion >= 15) claseOcupacion = 'lleno';
         else if (ocupacion >= 11) claseOcupacion = 'alta';
@@ -1817,7 +1849,7 @@ function mostrarReservasActivas() {
     container.innerHTML = ''; 
     const year = calendarDate.getFullYear();
     const month = calendarDate.getMonth();
-    const primerDiaMes = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+    const primerDiaMes = `${year}-${String(month+1).padStart(2,'0')}-01`;
     const ultimoDiaMes = new Date(year, month + 1, 0).toISOString().split('T')[0];
     const reservasDelMes = reservasDB.filter(r => r.tipo === 'hotel' && r.fin >= primerDiaMes && r.inicio <= ultimoDiaMes).sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
     if (reservasDelMes.length === 0) { container.innerHTML = '<p style="color: #666; padding: 20px; text-align: center;">No hay reservas para este mes</p>'; return; }
