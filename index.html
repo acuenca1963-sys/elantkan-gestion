@@ -1662,15 +1662,22 @@ window.seleccionarTodasFacturas = (seleccionar) => { if (seleccionar) { facturas
 window.imprimirTodasFacturas = () => { if (facturasDB.length === 0) { alert('❌ No hay facturas para imprimir'); return; } facturasSeleccionadas = facturasDB.map(f => f.id); imprimirFacturasSeleccionadas(); };
 
 window.imprimirFacturasSeleccionadas = () => {
-    if (facturasSeleccionadas.length === 0) { alert('❌ Selecciona al menos una factura'); return; }
+    if (facturasSeleccionadas.length === 0) { 
+        alert('❌ Selecciona al menos una factura'); 
+        return; 
+    }
+    
     const f = facturasDB.find(x => x.id === facturasSeleccionadas[0]);
-    if (!f) { alert('❌ Factura no encontrada'); return; }
+    if (!f) { 
+        alert('❌ Factura no encontrada'); 
+        return; 
+    }
     
     const baseNum = parseFloat(f.baseImponible) || 0;
     const ivaNum = parseFloat(f.iva) || 0;
     const totalNum = parseFloat(f.total) || 0;
     
-    // Rellenar TODOS los campos ANTES de imprimir
+    // Rellenar TODOS los campos
     document.getElementById('printCliente').textContent = f.cliente || '';
     document.getElementById('printClienteDNI').textContent = f.clienteDNI || '-';
     document.getElementById('printClienteDireccion').textContent = f.clienteDireccion || '-';
@@ -1681,22 +1688,26 @@ window.imprimirFacturasSeleccionadas = () => {
     document.getElementById('printPerro').textContent = f.nombrePerro || '-';
     document.getElementById('printServicio').textContent = f.servicio || '';
     document.getElementById('printConcepto').textContent = f.servicio || '';
-    document.getElementById('printBase').textContent = baseNum.toFixed(2) + '€';
-    document.getElementById('printTotal').textContent = totalNum.toFixed(2) + '€';
-    document.getElementById('printTotalBase').textContent = baseNum.toFixed(2) + '€';
-    document.getElementById('printTotalIVA').textContent = ivaNum.toFixed(2) + '€';
-    document.getElementById('printTotalFinal').textContent = totalNum.toFixed(2) + '€';
+    document.getElementById('printBase').textContent = baseNum.toFixed(2) + ' €';
+    document.getElementById('printTotal').textContent = totalNum.toFixed(2) + ' €';
+    document.getElementById('printTotalBase').textContent = baseNum.toFixed(2) + ' €';
+    document.getElementById('printTotalIVA').textContent = ivaNum.toFixed(2) + ' €';
+    document.getElementById('printTotalFinal').textContent = totalNum.toFixed(2) + ' €';
     
-    // Mostrar plantilla e imprimir
+    // Forzar actualización del DOM
     const plantilla = document.getElementById('facturaPrintTemplate');
-    plantilla.classList.add('visible');
     plantilla.style.display = 'block';
+    plantilla.classList.add('visible');
     
+    // Esperar a que se renderice
     setTimeout(() => {
         window.print();
-        plantilla.classList.remove('visible');
-        plantilla.style.display = 'none';
-    }, 500);
+        
+        setTimeout(() => {
+            plantilla.classList.remove('visible');
+            plantilla.style.display = 'none';
+        }, 1000);
+    }, 300);
 };
 </script>
 </body>
