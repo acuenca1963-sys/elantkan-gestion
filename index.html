@@ -13,11 +13,10 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { 
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-    background: #cbd5e1; /* Fondo gris serio */
+    background: #cbd5e1;
     min-height: 100vh; 
     color: #334155;
 }
-/* ALERTA DE ADIESTRAMIENTO */
 .training-alert {
     background: #f59e0b;
     color: white;
@@ -66,7 +65,7 @@ body {
     background: #334155; 
     color: white; 
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    border-bottom: 4px solid #f59e0b; /* Toque premium */
+    border-bottom: 4px solid #f59e0b;
 }
 .header-top { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; }
 .user-info { display: flex; align-items: center; gap: 15px; }
@@ -140,8 +139,6 @@ tr:hover { background: #f8fafc; }
 .loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.98); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
 .spinner { width: 50px; height: 50px; border: 4px solid #e2e8f0; border-top: 4px solid #334155; border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-/* CALENDARIOS (HOTEL Y ADIESTRAMIENTO) */
 .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 20px; background: #334155; color: white; border-radius: 8px; }
 .calendar-header h2 { font-size: 1.4em; font-weight: 600; }
 .calendar-nav { display: flex; gap: 10px; }
@@ -158,18 +155,18 @@ tr:hover { background: #f8fafc; }
 .calendar-leyenda { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; padding: 15px; background: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; }
 .leyenda-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #64748b; }
 .leyenda-color { width: 14px; height: 14px; border-radius: 3px; }
-
+.leyenda-color.baja { background: #dcfce7; }
+.leyenda-color.media { background: #fef3c7; }
+.leyenda-color.alta { background: #fee2e2; }
+.leyenda-color.lleno { background: #ef4444; }
 .reservas-activas { background: #f8fafc; padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid #e2e8f0; }
 .reservas-activas h3 { color: #334155; margin-bottom: 15px; font-weight: 700; }
 .reserva-card { background: white; padding: 15px; margin: 10px 0; border-radius: 6px; border-left: 4px solid #334155; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
 .reserva-info h4 { color: #1e293b; margin-bottom: 4px; font-weight: 700; }
 .reserva-info p { margin: 2px 0; font-size: 13px; color: #64748b; }
-
-/* BUSCADOR PERROS ADIESTRAMIENTO */
 .buscador-perros-resultados { max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px; margin-top: 5px; background: white; display: none; position: absolute; z-index: 100; width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
 .buscador-perros-item { padding: 10px; border-bottom: 1px solid #f1f5f9; cursor: pointer; }
 .buscador-perros-item:hover { background: #f8fafc; }
-
 .contact-item { transition: all 0.2s; background: white; padding: 15px; margin: 10px 0; border-radius: 6px; border-left: 4px solid #25D366; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 1px solid #e2e8f0; border-left-width: 4px; }
 .contact-item:hover { background: #f8fafc; }
 .contact-checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: #334155; }
@@ -196,15 +193,12 @@ tr:hover { background: #f8fafc; }
 .stat-box h4 { color: #64748b; margin-bottom: 10px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
 .stat-box .value { font-size: 24px; font-weight: 800; color: #1e293b; }
 .stat-box .subtext { font-size: 13px; color: #94a3b8; margin-top: 5px; }
-
-/* HISTORIAL MEJORADO */
 .history-toolbar { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px; }
 .history-filters { display: flex; gap: 10px; align-items: center; flex: 1; }
 .history-actions { display: flex; gap: 10px; }
 .filter-btn { padding: 8px 15px; border: 1px solid #cbd5e1; background: white; border-radius: 6px; cursor: pointer; font-weight: 600; color: #64748b; transition: all 0.2s; }
 .filter-btn:hover { background: #f1f5f9; }
 .filter-btn.active { background: #334155; color: white; border-color: #334155; }
-
 @media print {
 body * { visibility: hidden; }
 .header, .tabs, .form-section, .actions, .sync-status, .calendar-nav, .buscador-container, .stats, .user-info, .btn-logout, .btn-config, .modal, .training-alert, .history-toolbar { display: none !important; }
@@ -303,7 +297,6 @@ body * { visibility: hidden; }
 <div class="header">
 <div class="header-top">
 <div style="display: flex; align-items: center; gap: 20px;">
-<!-- LOGO HEADER MÁS GRANDE -->
 <div style="text-align: center;">
 <img src="https://raw.githubusercontent.com/acuenca1963-sys/Lyra-app/main/logo-lyra.png" alt="Lyra App" style="width: 120px; height: 120px; object-fit: contain; display: block; margin: 0 auto;">
 <div style="margin-top: 5px; font-weight: 800; color: white; font-size: 20px; letter-spacing: 2px;">LYRA APP</div>
@@ -334,7 +327,6 @@ body * { visibility: hidden; }
 <button class="tab" onclick="showSection('facturas')">📄 Facturas</button>
 <button class="tab" onclick="showSection('contactos')"> WhatsApp</button>
 </div>
-<!-- PERROS -->
 <div id="perros" class="section active">
 <div class="buscador-container">
 <h3>🔍 Buscador Avanzado</h3>
@@ -420,7 +412,6 @@ body * { visibility: hidden; }
 </div>
 <div class="table-container"><table id="tablaPerrosPrint"><thead><tr><th>Foto</th><th>Perro</th><th>Raza</th><th>Microchip</th><th>Pasaporte</th><th>Dueño</th><th>Teléfono</th><th>Acciones</th></tr></thead><tbody id="tablaPerros"></tbody></table></div>
 </div>
-<!-- HOTEL -->
 <div id="hotel" class="section">
 <div class="calendar-header">
 <h2 id="calendarMonthYear"></h2>
@@ -462,7 +453,6 @@ body * { visibility: hidden; }
 <button class="btn btn-success" onclick="crearReservaHotel()">✅ Crear Reserva</button>
 </div>
 </div>
-<!-- RESERVAS -->
 <div id="reservas" class="section">
 <div class="form-section">
 <h3>📅 Nueva Reserva <button class="btn btn-print" onclick="imprimirListaReservas()" style="float:right;">️ Imprimir Lista</button></h3>
@@ -500,7 +490,6 @@ body * { visibility: hidden; }
 </div>
 <div class="table-container"><table id="tablaReservasPrint"><thead><tr><th>Perro</th><th>Tipo</th><th>Inicio</th><th>Fin</th><th>Días</th><th>Caseta</th><th>Precio</th><th>Acciones</th></tr></thead><tbody id="tablaReservas"></tbody></table></div>
 </div>
-<!-- ADIESTRAMIENTO -->
 <div id="adiestramiento" class="section">
 <div class="form-section">
 <h3>🎓 Programar Clase de Adiestramiento</h3>
@@ -531,7 +520,6 @@ body * { visibility: hidden; }
 </div>
 <button class="btn btn-success" onclick="crearClaseAdiestramiento()">✅ Programar Clase</button>
 </div>
-<!-- CALENDARIO MENSUAL ADIESTRAMIENTO -->
 <div class="calendar-header">
 <h2 id="trainingMonthYear"></h2>
 <div class="calendar-nav">
@@ -542,7 +530,6 @@ body * { visibility: hidden; }
 </div>
 <div class="calendar-grid" id="trainingCalendarGrid"></div>
 </div>
-<!-- ESTADÍSTICAS -->
 <div id="estadisticas" class="section">
 <div class="form-section">
 <h3>📈 Panel de Análisis</h3>
@@ -570,7 +557,6 @@ body * { visibility: hidden; }
 </div>
 </div>
 </div>
-<!-- HISTORIAL UNIFICADO -->
 <div id="historial" class="section">
 <div class="history-toolbar">
 <div class="history-filters">
@@ -606,7 +592,6 @@ body * { visibility: hidden; }
 </table>
 </div>
 </div>
-<!-- FACTURAS MEJORADA v5.3 -->
 <div id="facturas" class="section">
 <div class="form-section">
 <h3> Nueva Factura Multi-Concepto</h3>
@@ -657,7 +642,6 @@ body * { visibility: hidden; }
 <button class="btn btn-success" onclick="generarFacturaMulti()" style="width: 100%; margin-top: 20px; padding: 15px;"> GENERAR FACTURA</button>
 </div>
 <div class="table-container">
-<!-- BARRA DE HERRAMIENTAS DE IMPRESIÓN -->
 <div class="toolbar-facturas">
 <span class="info-seleccion" id="facturasSeleccionadasCount">0 seleccionadas</span>
 <div>
@@ -669,7 +653,6 @@ body * { visibility: hidden; }
 <table><thead><tr><th>Nº</th><th>Fecha</th><th>Cliente</th><th>Total</th><th>Acciones</th></tr></thead><tbody id="tablaFacturas"></tbody></table>
 </div>
 </div>
-<!-- WHATSAPP -->
 <div id="contactos" class="section">
 <div class="form-section">
 <h3> Envío Masivo de Mensajes</h3>
@@ -702,7 +685,6 @@ body * { visibility: hidden; }
 </div>
 <div class="sync-status"><div class="sync-dot"></div><span>Sincronizado</span></div>
 </div>
-<!-- Modales -->
 <div id="modalTrainingDay" class="modal">
 <div class="modal-content">
 <span class="close" onclick="cerrarModal('modalTrainingDay')">&times;</span>
@@ -710,7 +692,6 @@ body * { visibility: hidden; }
 <div id="modalTrainingDayContent"></div>
 </div>
 </div>
-<!-- Resto de modales existentes (Perro, Reserva, etc.) se mantienen igual que en v5.4 -->
 <div id="modalPerro" class="modal"><div class="modal-content"><span class="close" onclick="cerrarModal('modalPerro')">&times;</span><img id="modalFotoPerro" class="foto-perro-grande hidden" src="" alt="Foto"><div id="contenidoPerro"></div><button class="btn btn-print" onclick="imprimirFichaIndividual()" style="margin-top: 20px; width: 100%;">️ Imprimir Ficha</button></div></div>
 <div id="modalReserva" class="modal"><div class="modal-content"><span class="close" onclick="cerrarModal('modalReserva')">&times;</span><div id="contenidoReserva"></div><input type="number" id="clasesCompletar" placeholder="Nº clases/días" style="margin:10px 0;"><button class="btn btn-success" onclick="marcarCompletado()">Actualizar</button><button class="btn btn-print" onclick="imprimirReservaIndividual()" style="margin-top: 10px; width: 100%;">🖨️ Imprimir Reserva</button></div></div>
 <div id="modalEditarReserva" class="modal"><div class="modal-content"><span class="close" onclick="cerrarModal('modalEditarReserva')">&times;</span><h2 style="color:#334155;margin-bottom:20px;">✏️ Editar Reserva</h2><input type="hidden" id="editReservaId"><div class="form-grid"><div class="form-group"><label>🐕 Perro:</label><input type="text" id="editReservaPerro" readonly></div><div class="form-group"><label>📋 Tipo:</label><select id="editReservaTipo"><option value="hotel"> Hotel</option><option value="guarderia">🏠 Guardería</option><option value="clase-suelta">🎓 Clase Suelta</option><option value="pack-10">📚 Pack 10 Clases</option><option value="pack-20">📖 Pack 20 Clases</option></select></div><div class="form-group"><label>📅 Inicio:</label><input type="date" id="editReservaInicio"></div><div class="form-group"><label> Fin:</label><input type="date" id="editReservaFin"></div><div class="form-group"><label>🏪 Caseta:</label><input type="text" id="editReservaCaseta"></div><div class="form-group"><label>💰 Precio:</label><input type="number" id="editReservaPrecio" step="0.01"></div><div class="form-group full-width"><label> Notas:</label><textarea id="editReservaNotas" rows="2"></textarea></div><div class="form-group full-width" id="editGrupoPerrosSection" style="display:none;background:#f1f5f9;padding:12px;border-radius:6px;border:1px solid #cbd5e1;"><label style="color:#334155;font-weight:bold;display:block;margin-bottom:8px;">🐕 ¿Añadir más perros al grupo?</label><input type="text" id="editBuscadorPerrosGrupo" placeholder=" Buscar perro..." onkeyup="buscarPerroParaGrupoEdicion()" style="margin-bottom:8px;width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:6px;"><div id="editBuscadorPerrosGrupoResultados" class="buscador-perros-resultados"></div><div id="editListaPerrosMismoDueno" style="margin-top:8px;"></div><p style="font-size:11px;color:#64748b;margin-top:5px;">ℹ️ Se crearán reservas vinculadas para los perros seleccionados</p><button type="button" class="btn btn-info" onclick="agregarPerrosAGrupoEdicion()" style="margin-top:8px;width:100%;">➕ Añadir Perros al Grupo</button></div></div><button class="btn btn-success" onclick="guardarEdicionReserva()" style="width: 100%;">💾 Guardar Cambios</button></div></div>
@@ -734,12 +715,10 @@ body * { visibility: hidden; }
 </div>
 </div><button class="btn btn-success" onclick="guardarEdicionPerro()">💾 Guardar</button></div></div>
 <div id="modalEditarFactura" class="modal"><div class="modal-content"><span class="close" onclick="cerrarModal('modalEditarFactura')">&times;</span><h2 style="color:#334155;margin-bottom:20px;">️ Editar Factura</h2><input type="hidden" id="editFacturaId"><div class="form-group"><label>Cliente:</label><input type="text" id="editFacturaCliente" readonly></div><div class="form-group"><label>Servicio:</label><input type="text" id="editFacturaServicio"></div><div class="form-group"><label>Total (€):</label><input type="number" id="editFacturaTotal" step="0.01"></div><div class="form-group"><label>Fecha:</label><input type="text" id="editFacturaFecha" readonly></div><button class="btn btn-success" onclick="guardarEdicionFactura()">💾 Guardar</button></div></div>
-<!-- MODAL CONFIGURACIÓN ACTUALIZADO -->
 <div id="modalConfig" class="modal">
 <div class="modal-content" style="max-width:600px;">
 <span class="close" onclick="cerrarModal('modalConfig')">&times;</span>
 <h2 style="color:#334155;margin-bottom:20px;">️ Configuración del Hotel</h2>
-<!-- Sección Datos de la Empresa (Cliente) -->
 <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
 <h3 style="color:#334155; margin-bottom:10px; font-size:16px;">🏢 Datos de Tu Empresa (Para Facturas)</h3>
 <div class="form-group">
@@ -758,7 +737,6 @@ body * { visibility: hidden; }
 <div class="form-group"><label>📞 Teléfono:</label><input type="tel" id="configClientPhone" placeholder="600 000 000"></div>
 </div>
 </div>
-<!-- Sección Configuración General -->
 <div class="form-group"><label>📛 Nombre de la App (Interno):</label><input type="text" id="configHotelName" value="Lyra App"></div>
 <div class="form-group"><label>🏠 Número de Casetas:</label><input type="number" id="configTotalKennels" value="15" min="1" max="500"></div>
 <div class="form-group"><label>🔖 Prefijo de Casetas:</label><input type="text" id="configKennelPrefix" value="C-" maxlength="5"></div>
@@ -772,7 +750,6 @@ body * { visibility: hidden; }
 <hr style="margin:15px 0; border:1px solid #e2e8f0;">
 <h3 style="color:#334155; margin-bottom:10px;">🔢 Facturación</h3>
 <div class="form-group"><label>📄 Próximo Nº Factura:</label><input type="number" id="configNextInvoice" value="1" min="1"></div>
-<!-- NUEVA SECCIÓN: COPIA DE SEGURIDAD -->
 <hr style="margin:15px 0; border:1px solid #e2e8f0;">
 <h3 style="color:#334155; margin-bottom:10px;">💾 Copia de Seguridad</h3>
 <div style="background: #fffbeb; padding: 15px; border-radius: 8px; border: 1px solid #fcd34d;">
@@ -788,7 +765,6 @@ body * { visibility: hidden; }
 </div>
 </div>
 <div id="fichaIndividual" class="ficha-individual"></div>
-<!-- Firebase SDK + LYRA APP CORE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -810,9 +786,9 @@ let currentUser = null;
 let perrosDB = [];
 let reservasDB = [];
 let facturasDB = [];
-let trainingDB = []; // Nueva colección para adiestramiento
+let trainingDB = [];
 let calendarDate = new Date();
-let trainingCalendarDate = new Date(); // Fecha independiente para calendario de training
+let trainingCalendarDate = new Date();
 let contactosSeleccionados = [];
 let facturasSeleccionadas = [];
 let fotoActualBase64 = null;
@@ -823,7 +799,6 @@ let hotelLogoBase64 = null;
 let clientLogoBase64 = null;
 const LOGO_URL_LYRA = "https://raw.githubusercontent.com/acuenca1963-sys/Lyra-app/main/logo-lyra.png";
 
-// ================= LYRA APP CONFIG =================
 const LyraConfig = {
 defaults: {
 hotelName: 'Lyra App',
@@ -844,7 +819,15 @@ const saved = localStorage.getItem('lyra_hotel_config');
 return saved ? {...this.defaults, ...JSON.parse(saved)} : {...this.defaults};
 } catch(e) { return {...this.defaults}; }
 },
-save: function(c) { localStorage.setItem('lyra_hotel_config', JSON.stringify({...this.load(), ...c})); }
+save: function(c) { 
+    try {
+        localStorage.setItem('lyra_hotel_config', JSON.stringify({...this.load(), ...c}));
+        return true;
+    } catch(e) {
+        console.error('Error guardando en localStorage:', e);
+        return false;
+    }
+}
 };
 window.LyraConfig = LyraConfig;
 
@@ -928,16 +911,27 @@ const clientCIF = document.getElementById('configClientCIF').value.trim();
 const clientAddress = document.getElementById('configClientAddress').value.trim();
 const clientPhone = document.getElementById('configClientPhone').value.trim();
 if (!hotelName || !totalKennels || !kennelPrefix) { mostrarConfigStatus('❌ Campos obligatorios', 'error'); return; }
-LyraConfig.save({
-hotelName,
-totalKennels,
-kennelPrefix,
-prices: { hotel: precioHotel, guarderia: precioGuarderia, claseSuelta: precioClase, pack10: precioClase * 10, pack20: precioClase * 20 },
-nextInvoiceNumber: nextInvoice || 1,
-clientName, clientCIF, clientAddress, clientPhone, clientLogo: clientLogoBase64
-});
-mostrarConfigStatus('✅ Guardado. Recargando...', 'success');
-setTimeout(() => { initLyraUI(); cerrarModal('modalConfig'); location.reload(); }, 1000);
+
+const configData = {
+    hotelName,
+    totalKennels,
+    kennelPrefix,
+    prices: { hotel: precioHotel, guarderia: precioGuarderia, claseSuelta: precioClase, pack10: precioClase * 10, pack20: precioClase * 20 },
+    nextInvoiceNumber: nextInvoice || 1,
+    clientName,
+    clientCIF,
+    clientAddress,
+    clientPhone,
+    clientLogo: clientLogoBase64
+};
+
+const guardado = LyraConfig.save(configData);
+if (guardado) {
+    mostrarConfigStatus('✅ Guardado correctamente. Recargando...', 'success');
+    setTimeout(() => { initLyraUI(); cerrarModal('modalConfig'); location.reload(); }, 1500);
+} else {
+    mostrarConfigStatus('❌ Error al guardar. El logo puede ser muy grande. Intenta subir una imagen más pequeña.', 'error');
+}
 };
 
 function mostrarConfigStatus(msg, type) {
@@ -1050,7 +1044,8 @@ datalist.appendChild(option);
 let reservaIndividualActual = null;
 let perroIndividualActual = null;
 let facturaIndividualActual = null;
-let currentHistoryFilter = 'todos'; // Filtro actual del historial
+let currentHistoryFilter = 'todos';
+let isGeneratingInvoice = false;
 
 function formatearFecha(fechaISO) { if (!fechaISO) return '-'; const partes = fechaISO.split('-'); return partes.length===3 ? `${partes[2]}/${partes[1]}/${partes[0]}` : fechaISO; }
 function getPrices() { return LyraConfig.load().prices; }
@@ -1071,7 +1066,7 @@ document.getElementById('mainApp').style.display = 'block';
 document.getElementById('userEmail').textContent = user.email;
 cargarDatos();
 cargarDatosTraining();
-comprobarAvisosTraining(); // Comprobar alarmas al iniciar
+comprobarAvisosTraining();
 } else {
 currentUser = null;
 document.getElementById('loadingScreen').style.display = 'none';
@@ -1087,12 +1082,11 @@ onSnapshot(collection(db, 'usuarios', currentUser.uid, 'reservas'), async (s) =>
 onSnapshot(collection(db, 'usuarios', currentUser.uid, 'facturas'), (s) => { facturasDB = s.docs.map(d => ({id: d.id, ...d.data()})); mostrarFacturas(); calcularEstadisticas(); });
 }
 
-// Función para cargar datos de adiestramiento
 function cargarDatosTraining() {
     onSnapshot(collection(db, 'usuarios', currentUser.uid, 'training'), (s) => {
         trainingDB = s.docs.map(d => ({id: d.id, ...d.data()}));
         renderizarTrainingCalendar();
-        mostrarHistorial(); // Actualizar historial cuando cambien las clases
+        mostrarHistorial();
     });
 }
 
@@ -1238,10 +1232,7 @@ alert('✅ Perro guardado correctamente');
 function mostrarPerros() { 
     const t = document.getElementById('tablaPerros'); 
     t.innerHTML = ''; 
-    
-    // ORDEN ALFABÉTICO POR NOMBRE DE PERRO
     const perrosOrdenados = [...perrosDB].sort((a, b) => a.nombrePerro.localeCompare(b.nombrePerro));
-    
     perrosOrdenados.forEach(p => { 
         const fotoSrc = p.fotoUrl || p.foto || ''; 
         const fotoHtml = fotoSrc ? `<img src="${fotoSrc}" class="foto-perro" alt="Foto" onerror="this.style.display='none'">` : '<div style="width:70px;height:70px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;color:#94a3b8;">📷</div>'; 
@@ -1397,20 +1388,15 @@ window.verReserva = (id) => { const r = reservasDB.find(x => x.id === id); if (!
 window.marcarCompletado = async () => { const id = window.reservaActualId; const completar = parseInt(document.getElementById('clasesCompletar').value); if (!id || !completar) return; const r = reservasDB.find(x => x.id === id); const nuevas = Math.min(r.completadas + completar, r.total); await updateDoc(doc(db, 'usuarios', currentUser.uid, 'reservas', id), { completadas: nuevas }); alert(`✅ ${completar} completadas`); };
 window.eliminarReserva = async (id) => { if (confirm('¿Eliminar?')) await deleteDoc(doc(db, 'usuarios', currentUser.uid, 'reservas', id)); };
 
-// ================= HISTORIAL UNIFICADO =================
 window.mostrarHistorial = () => { 
     const tbody = document.getElementById('tablaHistorial'); 
     if (!tbody) return; 
-    
-    // Combinar reservas y training
     let todosEventos = [];
-    
-    // Añadir reservas (Hotel/Guardería/Clases sueltas)
     reservasDB.forEach(r => {
         todosEventos.push({
             id: r.id,
             tipo: 'reserva',
-            subtipo: r.tipo, // hotel, guarderia, clase-suelta, etc.
+            subtipo: r.tipo,
             fecha: r.inicio,
             cliente: r.nombreDueno,
             perro: r.nombrePerro,
@@ -1420,8 +1406,6 @@ window.mostrarHistorial = () => {
             estado: r.fin < new Date().toISOString().split('T')[0] ? 'Completada' : 'Activa'
         });
     });
-    
-    // Añadir training
     trainingDB.forEach(t => {
         todosEventos.push({
             id: t.id,
@@ -1436,42 +1420,29 @@ window.mostrarHistorial = () => {
             estado: 'Programada'
         });
     });
-    
-    // Ordenar por fecha descendente
     todosEventos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-    
-    // Aplicar filtros
     const texto = document.getElementById('buscarHistorial')?.value.toLowerCase().trim() || '';
     const desde = document.getElementById('historialDesde')?.value || '';
     const hasta = document.getElementById('historialHasta')?.value || '';
-    
     let eventosFiltrados = todosEventos.filter(e => {
-        // Filtro de texto
         let coincideTexto = true;
         if (texto) {
             coincideTexto = e.cliente.toLowerCase().includes(texto) || e.perro.toLowerCase().includes(texto);
         }
-        
-        // Filtro de tipo (botones)
         let coincideTipo = true;
         if (currentHistoryFilter !== 'todos') {
             coincideTipo = e.subtipo === currentHistoryFilter;
         }
-        
-        // Filtro de fechas
         let coincideFecha = true;
         if (desde && e.fecha < desde) coincideFecha = false;
         if (hasta && e.fecha > hasta) coincideFecha = false;
-        
         return coincideTexto && coincideTipo && coincideFecha;
     });
-    
     tbody.innerHTML = '';
     if (eventosFiltrados.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:#64748b;">No hay registros en el historial</td></tr>';
         return;
     }
-    
     eventosFiltrados.forEach(e => {
         const fechaFmt = formatearFecha(e.fecha);
         tbody.innerHTML += `
@@ -1490,7 +1461,6 @@ window.mostrarHistorial = () => {
 
 window.filtrarPorTipo = (tipo, btn) => {
     currentHistoryFilter = tipo;
-    // Actualizar estilo de botones
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     if(btn) btn.classList.add('active');
     mostrarHistorial();
@@ -1507,9 +1477,7 @@ window.toggleSelectAllHistory = (checkbox) => {
 window.imprimirHistorialSeleccionado = () => {
     const seleccionados = Array.from(document.querySelectorAll('.history-checkbox:checked'));
     if (seleccionados.length === 0) { alert('❌ Selecciona al menos un registro'); return; }
-    
     let contenido = `<h1>Lyra App - Historial Seleccionado</h1><table border="1" cellpadding="10" style="width:100%;border-collapse:collapse;"><thead><tr><th>Fecha</th><th>Cliente</th><th>Perro</th><th>Servicio</th><th>Precio</th></tr></thead><tbody>`;
-    
     seleccionados.forEach(cb => {
         const row = cb.closest('tr');
         const celdas = row.querySelectorAll('td');
@@ -1521,9 +1489,7 @@ window.imprimirHistorialSeleccionado = () => {
             <td>${celdas[6].innerText}</td>
         </tr>`;
     });
-    
     contenido += `</tbody></table>`;
-    
     const win = window.open('', '_blank');
     win.document.write(contenido);
     win.document.close();
@@ -1533,12 +1499,10 @@ window.imprimirHistorialSeleccionado = () => {
 window.imprimirTodoHistorial = () => {
     const filas = document.querySelectorAll('#tablaHistorial tr');
     if (filas.length === 0) { alert('❌ No hay datos para imprimir'); return; }
-    
     let contenido = `<h1>Lyra App - Historial Completo</h1><table border="1" cellpadding="10" style="width:100%;border-collapse:collapse;"><thead><tr><th>Fecha</th><th>Cliente</th><th>Perro</th><th>Servicio</th><th>Precio</th></tr></thead><tbody>`;
-    
     filas.forEach(row => {
         const celdas = row.querySelectorAll('td');
-        if (celdas.length > 1) { // Ignorar fila de "no hay datos"
+        if (celdas.length > 1) {
              contenido += `<tr>
                 <td>${celdas[1].innerText}</td>
                 <td>${celdas[2].innerText}</td>
@@ -1548,15 +1512,12 @@ window.imprimirTodoHistorial = () => {
             </tr>`;
         }
     });
-    
     contenido += `</tbody></table>`;
-    
     const win = window.open('', '_blank');
     win.document.write(contenido);
     win.document.close();
     win.print();
 };
-// ================= FIN HISTORIAL =================
 
 window.añadirConcepto = () => {
 const tbody = document.getElementById('listaConceptos');
@@ -1611,58 +1572,72 @@ document.getElementById('totalIVA').textContent = iva.toFixed(2);
 document.getElementById('totalFinal').textContent = total.toFixed(2);
 };
 
+// ✅ PARCH 1: Candado anti-duplicados en facturas
 window.generarFacturaMulti = async () => {
-const cliente = document.getElementById('facturaDueno').value;
-const idPerro = document.getElementById('facturaPerroId').value;
-if (!cliente) { alert('❌ Selecciona un dueño'); return; }
-const conceptos = [];
-const filas = document.querySelectorAll('#listaConceptos tr');
-filas.forEach(row => {
-const servicioText = row.querySelector('.servicio-select option:checked').text;
-const cantidad = row.querySelector('.cantidad-input').value;
-const precio = row.querySelector('.precio-input').value;
-const subtotal = (parseFloat(cantidad) * parseFloat(precio)).toFixed(2);
-conceptos.push({ servicio: servicioText, cantidad, precio, subtotal });
-});
-if (conceptos.length === 0) { alert(' Añade al menos un concepto'); return; }
-const baseImponible = parseFloat(document.getElementById('totalBase').textContent);
-const iva = parseFloat(document.getElementById('totalIVA').textContent);
-const total = parseFloat(document.getElementById('totalFinal').textContent);
-const cfg = LyraConfig.load();
-const numeroFactura = String(cfg.nextInvoiceNumber || 1).padStart(4, '0');
-cfg.nextInvoiceNumber++;
-LyraConfig.save(cfg);
-const perro = perrosDB.find(p => p.id === idPerro);
-const factura = {
-numero: numeroFactura,
-fecha: new Date().toLocaleDateString('es-ES'),
-fechaISO: new Date().toISOString(),
-cliente: cliente,
-clienteDNI: perro?.dniDueno || '',
-clienteDireccion: perro?.direccion || '',
-clienteTelefono: perro?.telefono || '',
-clienteEmail: perro?.email || '',
-nombrePerro: perro?.nombrePerro || '',
-idPerro: idPerro,
-conceptos: conceptos,
-baseImponible: baseImponible,
-iva: iva,
-total: total,
-fechaCreacion: new Date().toISOString()
-};
-try {
-await addDoc(collection(db, 'usuarios', currentUser.uid, 'facturas'), factura);
-alert(`✅ Factura #${numeroFactura} generada correctamente.`);
-document.getElementById('listaConceptos').innerHTML = '';
-añadirConcepto();
-document.getElementById('buscadorDuenosFactura').value = '';
-document.getElementById('duenoSeleccionadoInfo').style.display = 'none';
-document.getElementById('buscadorPerrosFactura').value = '';
-document.getElementById('perroFacturaSeleccionadoInfo').style.display = 'none';
-document.getElementById('buscadorPerrosFactura').disabled = true;
-} catch (e) {
-alert('❌ Error: ' + e.message);
-}
+    if (isGeneratingInvoice) return;
+    isGeneratingInvoice = true;
+    
+    const cliente = document.getElementById('facturaDueno').value;
+    const idPerro = document.getElementById('facturaPerroId').value;
+    if (!cliente) { 
+        alert('❌ Selecciona un dueño'); 
+        isGeneratingInvoice = false;
+        return; 
+    }
+    const conceptos = [];
+    const filas = document.querySelectorAll('#listaConceptos tr');
+    filas.forEach(row => {
+        const servicioText = row.querySelector('.servicio-select option:checked').text;
+        const cantidad = row.querySelector('.cantidad-input').value;
+        const precio = row.querySelector('.precio-input').value;
+        const subtotal = (parseFloat(cantidad) * parseFloat(precio)).toFixed(2);
+        conceptos.push({ servicio: servicioText, cantidad, precio, subtotal });
+    });
+    if (conceptos.length === 0) { 
+        alert('⚠️ Añade al menos un concepto'); 
+        isGeneratingInvoice = false;
+        return; 
+    }
+    const baseImponible = parseFloat(document.getElementById('totalBase').textContent);
+    const iva = parseFloat(document.getElementById('totalIVA').textContent);
+    const total = parseFloat(document.getElementById('totalFinal').textContent);
+    const cfg = LyraConfig.load();
+    const numeroFactura = String(cfg.nextInvoiceNumber || 1).padStart(4, '0');
+    cfg.nextInvoiceNumber++;
+    LyraConfig.save(cfg);
+    const perro = perrosDB.find(p => p.id === idPerro);
+    const factura = {
+        numero: numeroFactura,
+        fecha: new Date().toLocaleDateString('es-ES'),
+        fechaISO: new Date().toISOString(),
+        cliente: cliente,
+        clienteDNI: perro?.dniDueno || '',
+        clienteDireccion: perro?.direccion || '',
+        clienteTelefono: perro?.telefono || '',
+        clienteEmail: perro?.email || '',
+        nombrePerro: perro?.nombrePerro || '',
+        idPerro: idPerro,
+        conceptos: conceptos,
+        baseImponible: baseImponible,
+        iva: iva,
+        total: total,
+        fechaCreacion: new Date().toISOString()
+    };
+    try {
+        await addDoc(collection(db, 'usuarios', currentUser.uid, 'facturas'), factura);
+        alert(`✅ Factura #${numeroFactura} generada correctamente.`);
+        document.getElementById('listaConceptos').innerHTML = '';
+        añadirConcepto();
+        document.getElementById('buscadorDuenosFactura').value = '';
+        document.getElementById('duenoSeleccionadoInfo').style.display = 'none';
+        document.getElementById('buscadorPerrosFactura').value = '';
+        document.getElementById('perroFacturaSeleccionadoInfo').style.display = 'none';
+        document.getElementById('buscadorPerrosFactura').disabled = true;
+    } catch (e) {
+        alert('❌ Error: ' + e.message);
+    } finally {
+        isGeneratingInvoice = false;
+    }
 };
 window.generarFactura = window.generarFacturaMulti;
 
@@ -1702,18 +1677,19 @@ window.eliminarFactura = async (id) => { if (confirm('¿Eliminar esta factura?')
 window.editarFactura = (id) => { const f = facturasDB.find(x => x.id === id); if (!f) return; document.getElementById('editFacturaId').value = id; document.getElementById('editFacturaCliente').value = f.cliente || ''; document.getElementById('editFacturaServicio').value = f.servicio || ''; document.getElementById('editFacturaTotal').value = f.total || ''; document.getElementById('editFacturaFecha').value = f.fecha || ''; document.getElementById('modalEditarFactura').style.display = 'block'; };
 window.guardarEdicionFactura = async () => { const id = document.getElementById('editFacturaId').value; if (!id) return; const total = parseFloat(document.getElementById('editFacturaTotal').value) || 0; const base = total / 1.21; const iva = base * 0.21; const datos = { servicio: document.getElementById('editFacturaServicio').value.trim(), total: total, baseImponible: base, iva: iva }; try { await updateDoc(doc(db, 'usuarios', currentUser.uid, 'facturas', id), datos); alert('✅ Factura actualizada'); cerrarModal('modalEditarFactura'); } catch (e) { alert('❌ Error: ' + e.message); } };
 
+// ✅ PARCH 2: Impresión móvil con Blob (funciona en iPhone/Android)
 window.imprimirFacturaIndividual = (id) => {
-const f = facturasDB.find(x => x.id === id);
-if (!f) return;
-const cfg = LyraConfig.load();
-const clientLogoHtml = cfg.clientLogo ? `<img src="${cfg.clientLogo}" alt="Logo Cliente">` : '';
-const clientName = cfg.clientName || 'Nombre de Tu Empresa';
-const clientCIF = cfg.clientCIF ? `<p><strong>CIF/NIF:</strong> ${cfg.clientCIF}</p>` : '';
-const clientAddress = cfg.clientAddress ? `<p><strong>Dirección:</strong> ${cfg.clientAddress}</p>` : '';
-const clientPhone = cfg.clientPhone ? `<p><strong>Teléfono:</strong> ${cfg.clientPhone}</p>` : '';
-const lyraLogoHtml = `<img src="${LOGO_URL_LYRA}" alt="Lyra App">`;
-const printWindow = window.open('', '_blank');
-printWindow.document.write(`<!DOCTYPE html>
+    const f = facturasDB.find(x => x.id === id);
+    if (!f) return;
+    const cfg = LyraConfig.load();
+    const clientLogoHtml = cfg.clientLogo ? `<img src="${cfg.clientLogo}" alt="Logo Cliente">` : '';
+    const clientName = cfg.clientName || 'Nombre de Tu Empresa';
+    const clientCIF = cfg.clientCIF ? `<p><strong>CIF/NIF:</strong> ${cfg.clientCIF}</p>` : '';
+    const clientAddress = cfg.clientAddress ? `<p><strong>Dirección:</strong> ${cfg.clientAddress}</p>` : '';
+    const clientPhone = cfg.clientPhone ? `<p><strong>Teléfono:</strong> ${cfg.clientPhone}</p>` : '';
+    const lyraLogoHtml = `<img src="${LOGO_URL_LYRA}" alt="Lyra App">`;
+    
+    const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
 <title>Factura ${f.numero}</title>
@@ -1734,7 +1710,7 @@ body { font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 
 .factura-tabla td { padding: 12px; border-bottom: 1px solid #ddd; }
 .factura-totales { width: 100%; max-width: 300px; margin-left: auto; }
 .factura-totales .fila { display: flex; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #eee; }
-.factura-totales .fila.total { background: #334155; color: white; font-weight: bold; font-size: 16px; border-radius: 4px; }
+.factura-totales .fila.total { background: #334155; color: white; font-weight: bold; font-size: 16px; border-radius: 5px; }
 .factura-footer { margin-top: 40px; padding-top: 20px; border-top: 2px solid #334155; text-align: center; font-size: 12px; color: #666; }
 @media print { body { padding: 20px; } }
 </style>
@@ -1798,10 +1774,17 @@ ${f.conceptos && f.conceptos.length > 0 ? f.conceptos.map(c => `
 <p>¡Gracias por confiar en ${clientName}!</p>
 <p>Para cualquier consulta, contacte con el hotel.</p>
 </div>
-<script>window.onload = function() { window.print(); window.close(); };<\/script>
+<script>window.onload = function() { setTimeout(() => { window.print(); }, 300); };<\/script>
 </body>
-</html>`);
-printWindow.document.close();
+</html>`;
+    
+    // ✅ Método Blob para móviles
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const printWindow = window.open(url, '_blank');
+    if (!printWindow) {
+        alert('⚠️ El navegador bloqueó la ventana de impresión. Permite las ventanas emergentes e inténtalo de nuevo.');
+    }
 };
 
 window.imprimirFacturasSeleccionadas = () => {
@@ -1910,20 +1893,16 @@ window.mesSiguiente = () => { const year = calendarDate.getFullYear(); const mon
 window.mesActual = () => { calendarDate = new Date(); mostrarCalendario(); mostrarReservasActivas(); };
 function actualizarOcupacion() { const hoy = new Date().toISOString().split('T')[0]; const cfg = LyraConfig.load(); const ocupadas = reservasDB.filter(r => r.tipo === 'hotel' && hoy >= r.inicio && hoy <= r.fin && r.completadas < r.total).length; document.getElementById('statHotel').textContent = `${ocupadas}/${cfg.totalKennels || 15}`; }
 
-// FUNCIONES DE ADIESTRAMIENTO
 window.buscarPerroParaTraining = () => {
     const texto = document.getElementById('trainDogSearch').value.toLowerCase().trim();
     const resultados = document.getElementById('trainDogResults');
     if (texto.length < 2) { resultados.style.display = 'none'; return; }
-    
     const perrosEncontrados = perrosDB.filter(p => p.nombrePerro.toLowerCase().includes(texto) || p.nombreDueno.toLowerCase().includes(texto));
-    
     if (perrosEncontrados.length === 0) {
         resultados.innerHTML = '<div class="buscador-perros-item">❌ No encontrado</div>';
         resultados.style.display = 'block';
         return;
     }
-    
     resultados.innerHTML = perrosEncontrados.map(p => 
         `<div class="buscador-perros-item" onclick="seleccionarPerroTraining('${p.id}', '${p.nombrePerro}', '${p.nombreDueno}', '${p.telefono || ''}')">
             🐕 <strong>${p.nombrePerro}</strong> - 👤 ${p.nombreDueno}
@@ -1937,7 +1916,6 @@ window.seleccionarPerroTraining = (id, nombre, dueno, telefono) => {
     document.getElementById('trainPerroNombre').value = nombre;
     document.getElementById('trainPerroDueno').value = dueno;
     document.getElementById('trainPerroTelefono').value = telefono;
-    
     document.getElementById('trainDogNameDisplay').textContent = `${nombre} (${dueno})`;
     document.getElementById('trainDogSelected').style.display = 'block';
     document.getElementById('trainDogResults').style.display = 'none';
@@ -1951,11 +1929,8 @@ window.crearClaseAdiestramiento = async () => {
     const tipo = document.getElementById('trainType').value;
     const precio = parseFloat(document.getElementById('trainPrice').value);
     const sesiones = parseInt(document.getElementById('trainSessions').value);
-    
     if(!idPerro || !fecha || !hora) { alert('❌ Completa todos los campos (Perro, Fecha y Hora)'); return; }
-    
     const perro = perrosDB.find(p => p.id === idPerro);
-    
     const clase = {
         idPerro,
         nombrePerro: perro.nombrePerro,
@@ -1969,11 +1944,9 @@ window.crearClaseAdiestramiento = async () => {
         completadas: 0,
         fechaCreacion: new Date().toISOString()
     };
-    
     try {
         await addDoc(collection(db, 'usuarios', currentUser.uid, 'training'), clase);
         alert('✅ Clase programada correctamente');
-        // Limpiar campos
         document.getElementById('trainDate').value = '';
         document.getElementById('trainTime').value = '';
         document.getElementById('trainDogSelected').style.display = 'none';
@@ -1981,18 +1954,14 @@ window.crearClaseAdiestramiento = async () => {
     } catch(e) { alert('Error: ' + e.message); }
 };
 
-// Renderizar Calendario Mensual de Adiestramiento
 function renderizarTrainingCalendar() {
     const grid = document.getElementById('trainingCalendarGrid');
     if (!grid) return;
     grid.innerHTML = '';
-    
     const year = trainingCalendarDate.getFullYear();
     const month = trainingCalendarDate.getMonth();
     const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-    
     document.getElementById('trainingMonthYear').textContent = `${meses[month]} ${year}`;
-    
     const diasSemana = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
     diasSemana.forEach(dia => {
         const div = document.createElement('div');
@@ -2000,30 +1969,24 @@ function renderizarTrainingCalendar() {
         div.textContent = dia;
         grid.appendChild(div);
     });
-    
     const primerDia = new Date(year, month, 1).getDay();
     const totalDias = new Date(year, month + 1, 0).getDate();
     const hoy = new Date();
-    
     for (let i = 0; i < primerDia; i++) {
         const div = document.createElement('div');
         div.className = 'calendar-day empty';
         grid.appendChild(div);
     }
-    
     for (let dia = 1; dia <= totalDias; dia++) {
         const fechaStr = `${year}-${String(month+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
         const clasesDia = trainingDB.filter(t => t.fecha === fechaStr);
-        
         const div = document.createElement('div');
         div.className = `calendar-day ${dia === hoy.getDate() && month === hoy.getMonth() && year === hoy.getFullYear() ? 'today' : ''}`;
         div.onclick = () => verClasesDelDia(fechaStr);
-        
         let content = `<div class="calendar-day-number">${dia}</div>`;
         if (clasesDia.length > 0) {
             content += `<div class="calendar-day-marker">${clasesDia.length} clase(s)</div>`;
         }
-        
         div.innerHTML = content;
         grid.appendChild(div);
     }
@@ -2032,10 +1995,8 @@ function renderizarTrainingCalendar() {
 window.verClasesDelDia = (fecha) => {
     const clasesDia = trainingDB.filter(t => t.fecha === fecha).sort((a,b) => a.hora.localeCompare(b.hora));
     const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    
     document.getElementById('modalTrainingDayTitle').textContent = `📅 Clases del ${fechaFormateada}`;
     const contenido = document.getElementById('modalTrainingDayContent');
-    
     if (clasesDia.length === 0) {
         contenido.innerHTML = '<p style="text-align: center; color: #64748b; padding: 20px;">No hay clases de adiestramiento para este día</p>';
     } else {
@@ -2093,10 +2054,8 @@ function comprobarAvisosTraining() {
     const manana = new Date();
     manana.setDate(manana.getDate() + 1);
     const dateStr = manana.toISOString().split('T')[0];
-    
     const clasesManana = trainingDB.filter(t => t.fecha === dateStr);
     const alertBox = document.getElementById('trainingAlert');
-    
     if(clasesManana.length > 0) {
         alertBox.style.display = 'block';
         let mensaje = `⚠️ Tienes ${clasesManana.length} clase(s) de adiestramiento programadas para mañana (${dateStr}):<br>`;
